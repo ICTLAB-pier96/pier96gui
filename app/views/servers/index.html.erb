@@ -1,0 +1,22 @@
+<h1>Listing servers</h1>
+ 
+<table class="striped">
+  <tr>
+    <th>Name</th>
+    <th>Host</th>
+    <th>Online</th>
+  </tr>
+ 
+  <% @servers.each do |s| %>
+    <tr>
+      <td><%= s.name %></td>
+      <td><%= s.host %></td>
+      <td>
+        <% if s.status %>
+          <span class="green">Online</span>
+        <% else %>
+          <span class="red">Offline</span>
+        <% end %></td>
+    </tr>
+  <% end %>
+</table>
