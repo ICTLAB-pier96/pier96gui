@@ -33,7 +33,7 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 # gem 'capistrano-rails', group: :development
 
   # Call 'debugger' anywhere in the code to stop execution and get a debugger console
-  gem 'debugger' , '1.6.8'
+  #  gem 'debugger' , '1.6.8'
 
   # Access an IRB console on exception pages or by using <%= console %> in views
   gem 'web-console', '~> 2.0'
