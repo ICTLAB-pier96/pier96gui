@@ -11,7 +11,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150529101522) do
+ActiveRecord::Schema.define(version: 20150531124049) do
+
+  create_table "containers", force: :cascade do |t|
+    t.string   "name"
+    t.integer  "server_id"
+    t.string   "ports"
+    t.text     "description"
+    t.string   "image"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
 
   create_table "servers", force: :cascade do |t|
     t.string   "name"
