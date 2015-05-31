@@ -5,7 +5,7 @@ class CreateContainers < ActiveRecord::Migration
       t.integer :server_id
       t.string :ports
       t.text :description
-      t.string :image
+      t.integer :image_id
 
       t.timestamps null: false
     end

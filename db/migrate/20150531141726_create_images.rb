@@ -3,6 +3,7 @@ class CreateImages < ActiveRecord::Migration
     create_table :images do |t|
       t.string :title
       t.string :date_added
+      t.string :base_image
 
       t.timestamps null: false
     end
