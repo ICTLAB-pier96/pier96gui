@@ -11,18 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-<<<<<<< HEAD
-ActiveRecord::Schema.define(version: 20150531175229) do
-
-  create_table "images", force: :cascade do |t|
-    t.string   "title"
-    t.string   "date_added"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string   "base_image"
-  end
-=======
-ActiveRecord::Schema.define(version: 20150531124049) do
+ActiveRecord::Schema.define(version: 20150531211641) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -45,6 +34,15 @@ ActiveRecord::Schema.define(version: 20150531124049) do
 
   add_index "houses", ["users_id"], name: "index_houses_on_users_id", using: :btree
 
+  create_table "images", force: :cascade do |t|
+    t.string   "title"
+    t.string   "date_added"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string   "base_image"
+    t.string   "filename"
+  end
+
   create_table "portfolios", force: :cascade do |t|
     t.string   "title",      limit: 255
     t.text     "text"
@@ -61,7 +59,6 @@ ActiveRecord::Schema.define(version: 20150531124049) do
   end
 
   add_index "rooms", ["houses_id"], name: "index_rooms_on_houses_id", using: :btree
->>>>>>> 7c7ae82757d8a5c2eaebcecc0c77568fe2e641ec
 
   create_table "servers", force: :cascade do |t|
     t.string   "name"

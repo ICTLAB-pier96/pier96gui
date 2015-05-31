@@ -23,6 +23,10 @@
     <%= f.label :base_image %><br>
     <%= f.text_field :base_image %>
   </p>
+  <p>
+    <%= f.label :file %><br>
+    <%= f.file_field :file %>
+  </p>
   <%= f.hidden_field :date_added, :value => Time.new.inspect %>
   <p>
     <%= f.submit %>

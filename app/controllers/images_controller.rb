@@ -14,7 +14,7 @@ class ImagesController < ApplicationController
   def edit
     @image = Image.find(params[:id])
   end
- 
+
   def create
     @image = Image.new(image_params)
  
@@ -40,6 +40,17 @@ class ImagesController < ApplicationController
     @image.destroy
  
     redirect_to Images_path
+  end
+
+  def upload
+    @image = Image.find(params[:id])
+    uploaded_io = params[:file]
+    @image.filename = uploaded_io.original_filename
+    @image.save
+    File.open(Rails.root.join('public', 'images', uploaded_io.original_filename), 'wb') do |file|
+      file.write(uploaded_io.read)
+    end
+    redirect_to @image
   end
 
 	private
