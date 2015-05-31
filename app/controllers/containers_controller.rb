@@ -4,7 +4,7 @@ class ContainersController < ApplicationController
 
     def create
     	@container = Container.new(container_params)
-
+    	@container.image
     	@container.save
     	redirect_to @container
     end
