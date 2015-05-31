@@ -4781,17 +4781,8 @@ span.badge {
 
 .container {
   padding: 0 1.5rem;
-  margin: 0 auto;
-  max-width: 1280px;
-  width: 90%; }
+}
 
-@media only screen and (min-width : 601px) {
-  .container {
-    width: 85%; } }
-
-@media only screen and (min-width : 993px) {
-  .container {
-    width: 70%; } }
 
 .container .row {
   margin-left: -0.75rem;
@@ -5578,7 +5569,7 @@ small {
   height: 36px;
   line-height: 36px;
   outline: 0;
-  padding: 0 2rem;
+  padding: 0 0.5rem;
   text-transform: uppercase;
   vertical-align: middle;
   -webkit-tap-highlight-color: transparent; }

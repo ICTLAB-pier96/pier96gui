@@ -5,10 +5,12 @@ Rails.application.config.assets.version = '1.0'
 
 
 Rails.application.config.assets.enabled = true
-Rails.application.config.assets.paths << "#{Rails.root}/app/assets/font/roboto"
+Rails.application.config.assets.paths << Rails.root.join("app", "assets", "font")
+Rails.application.config.assets.paths << Rails.root.join("app", "assets","font", "material-design-icons")
+
 # Add additional assets to the asset load path
 # Rails.application.config.assets.paths << Emoji.images_path
-Rails.application.config.assets.precompile += %w( materialize.min.css )
+Rails.application.config.assets.precompile += %w( materialize.css )
 Rails.application.config.assets.precompile += %w( materialize.min.js )
 Rails.application.config.assets.precompile += %w( jquery.min.js )
 

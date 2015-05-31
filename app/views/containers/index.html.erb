@@ -1,0 +1,24 @@
+<h1>Listing Containers</h1>
+<%= link_to 'Add container', new_container_path %>
+
+<table class="striped">
+  <tr>
+    <th>Name</th>
+    <th>Server</th>
+    <th>Image</th>
+    <th>Description</th>
+  </tr>
+  
+  <% @containers.each do |c| %>
+    <tr>
+      <td><%= c.name %></td>
+      <td><%= c.server_id %></td>
+      <td><%= c.image %></td>
+      <td><%= c.description %></td>
+    </tr>
+  <% end %>
+</table>
+<%= if @containers.count > 5 
+	link_to 'Add container', new_container_path
+end %>
+

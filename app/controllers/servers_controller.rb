@@ -35,10 +35,16 @@ class ServersController < ApplicationController
         server.status = false
         server.setup_info = "Server is offline"
       end
+      server.save
     end
   end
   
+  def destroy
+    @server = Server.find(params[:id])
+    @server.destroy
 
+    redirect_to action: :index
+  end
 
   def check_server(server)
     @server_status = false
@@ -46,7 +52,7 @@ class ServersController < ApplicationController
     @daemon_running = false
 
     begin
-      Net::SSH.start( server.host, server.user, :password => server.pass ) do|ssh|
+      Net::SSH.start( server.host, server.user, :password => server.pass, :timeout => 5) do|ssh|
         output = ssh.exec!("echo true")
         @server_status = (output === "true\n")
         server.setup_info = ""
@@ -75,13 +81,13 @@ class ServersController < ApplicationController
             end
           end
         else
-          output = ssh.exec!("apt-get install docker.io")
+          output = ssh.exec!("apt-get install -y docker.io")
         end
       end
     rescue => error
       puts error.message
     end
-    redirect_to action: :index
+    redirect_to @server
   end
 
   def show
