@@ -1,4 +1,4 @@
-<h1>Listing servers</h1>
+<h1 class="blue-text text-darken-3">Servers</h1>
  
 <table class="striped">
   <tr>
@@ -10,19 +10,19 @@
  
   <% @servers.each do |s| %>
     <tr>
-      <td><%= s.name %></td>
+      <td><%= link_to "#{s.name}", server_path(:id => s.id) %></td>
       <td><%= s.host %></td>
       <td>
         <% if s.status %>
-          <a class="waves-effect waves-light btn green">Online</a>
+          <a class="btn green disabled white-text">Online</a>
         <% else %>
-          <span class="waves-effect waves-light btn red">Offline</span>
+          <span class="btn red disabled white-text">Offline</span>
         <% end %></td>
         <td>
         <% if s.setup %>
-         <a class="waves-effect waves-light dropdown-button btn green">Ready</a>
+         <a class="btn green disabled white-text">Ready</a>
         <% elsif !s.setup %>
-          <a class="waves-effect waves-light dropdown-button btn red tooltipped" data-position="right" data-delay="50" data-tooltip="<%= s.setup_info %>" href="#" data-beloworigin="true" data-activates="server<%= s.id %>">Not ready
+          <a class="dropdown-button btn red tooltipped" data-position="right" data-delay="50" data-tooltip="<%= s.setup_info %>" href="#" data-beloworigin="true" data-activates="server<%= s.id %>">Not ready
           </a>
           <ul id="server<%= s.id %>" class='dropdown-content' style='width:auto'>
             <li><%= link_to 'Fix setup', server_setup_path(:id => s.id) %></li>

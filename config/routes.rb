@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   resources :images, :containers, :servers
 
   get '/servers/:id/setup', to: 'servers#setup', as: :server_setup
+  get '/servers/:id/destroy', to: 'servers#destroy', as: :server_destroy
 
 
   # Example of regular route:

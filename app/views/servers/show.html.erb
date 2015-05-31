@@ -2,8 +2,29 @@
   <strong>Name:</strong>
   <%= @server.name %>
 </p>
- 
+
 <p>
   <strong>Host:</strong>
   <%= @server.host %>
+</p>
+<p>
+  <strong>Status: </strong>
+  <% if @server.status %>
+    <a class="btn green disabled white-text">Online</a>
+  <% else %>
+    <span class="btn red disabled white-text">Offline</span>
+  <% end %></td>
+
+  <% if @server.setup %>
+    <a class="btn green disabled white-text">Ready</a>
+  <% elsif !@server.setup %>
+    <a class="btn red white-text tooltipped" data-position="right" data-delay="50" data-tooltip="<%= @server.setup_info %>" href="#">Not ready
+    </a>
+  <% end %></td>
+</p>
+<p>
+  <strong>Actions: </strong>
+  <%= link_to "Remove",server_destroy_path(id: @server.id), class: "blue darken-3 btn" %>
+  <%= link_to 'Setup', server_setup_path(:id => @server.id), class: "blue darken-3 btn" %>
+  <a class="blue darken-3 btn">Configure</a>
 </p>
