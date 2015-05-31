@@ -12,6 +12,7 @@ Rails.application.routes.draw do
   get '/servers/:id/setup', to: 'servers#setup', as: :server_setup
   get '/servers/:id/destroy', to: 'servers#destroy', as: :server_destroy
 
+  post '/images/:id/upload', :to => 'images#upload', as: :image_upload
 
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
