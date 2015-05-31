@@ -19,6 +19,8 @@ ActiveRecord::Schema.define(version: 20150529101522) do
     t.string   "user"
     t.string   "pass"
     t.boolean  "status"
+    t.boolean  "setup"
+    t.string   "setup_info"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

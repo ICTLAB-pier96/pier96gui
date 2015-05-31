@@ -5,6 +5,7 @@
     <th>Name</th>
     <th>Host</th>
     <th>Online</th>
+    <th>Ready?</th>
   </tr>
  
   <% @servers.each do |s| %>
@@ -13,9 +14,19 @@
       <td><%= s.host %></td>
       <td>
         <% if s.status %>
-          <span class="green">Online</span>
+          <a class="waves-effect waves-light btn green">Online</a>
         <% else %>
-          <span class="red">Offline</span>
+          <span class="waves-effect waves-light btn red">Offline</span>
+        <% end %></td>
+        <td>
+        <% if s.setup %>
+         <a class="waves-effect waves-light dropdown-button btn green">Ready</a>
+        <% elsif !s.setup %>
+          <a class="waves-effect waves-light dropdown-button btn red tooltipped" data-position="right" data-delay="50" data-tooltip="<%= s.setup_info %>" href="#" data-beloworigin="true" data-activates="server<%= s.id %>">Not ready
+          </a>
+          <ul id="server<%= s.id %>" class='dropdown-content' style='width:auto'>
+            <li><%= link_to 'Fix setup', server_setup_path(:id => s.id) %></li>
+          </ul>
         <% end %></td>
     </tr>
   <% end %>

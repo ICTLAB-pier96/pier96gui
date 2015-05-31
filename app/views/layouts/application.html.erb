@@ -1,14 +1,22 @@
-<!DOCTYPE html>
 <html>
-<head>
-  <title>Pier96</title>
-  <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
-  <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
-  <%= csrf_meta_tags %>
-</head>
-<body>
-
-<%= yield %>
-
-</body>
+  <head>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>
+      <%= content_for?(:title) ? yield(:title) : 'Project' %>
+    </title>
+    <meta content="<%= content_for?(:description) ? yield(:description) : 'Project' %>" name="description"/>
+    <%= stylesheet_link_tag 'materialize.min' %>
+    <%= javascript_include_tag "jquery.min" %>
+    <%= javascript_include_tag 'materialize.min' %>
+    <%= csrf_meta_tags %>
+  </head>
+  <body>
+    <header>
+      <%= render 'layouts/navigation' %>
+    </header>
+    <main role="main">
+      <%= yield %>
+    </main>
+  </body>
+  <%= render 'layouts/footer' %>
 </html>

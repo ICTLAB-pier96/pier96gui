@@ -14,3 +14,5 @@
  *= require_self
  */
 @import "materialize.css" screen, projection;
+
+div.logo {background-image: image-url("logo.png");}

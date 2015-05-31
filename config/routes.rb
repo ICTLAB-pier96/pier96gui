@@ -9,6 +9,9 @@ Rails.application.routes.draw do
 
   resources :images, :containers, :servers
 
+  get '/servers/:id/setup', to: 'servers#setup', as: :server_setup
+
+
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
 

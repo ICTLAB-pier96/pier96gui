@@ -6,6 +6,8 @@ class CreateServers < ActiveRecord::Migration
       t.string :user
       t.string :pass
       t.boolean :status
+      t.boolean :setup
+      t.string :setup_info
 
       t.timestamps null: false
     end
