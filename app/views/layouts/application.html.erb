@@ -5,9 +5,9 @@
       <%= content_for?(:title) ? yield(:title) : 'Pier96' %>
     </title>
     <meta content="<%= content_for?(:description) ? yield(:description) : 'Pier96' %>" name="description"/>
-    <%= stylesheet_link_tag 'materialize' %>
+    <%= stylesheet_link_tag 'materialize', :debug => false  %>
     <%= javascript_include_tag "jquery.min" %>
-    <%= javascript_include_tag 'materialize.min' %>
+    <%= javascript_include_tag 'materialize.min', :debug => false %>
     <%= csrf_meta_tags %>
   </head>
   <body>

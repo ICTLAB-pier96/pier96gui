@@ -52,7 +52,7 @@ class ServersController < ApplicationController
     @daemon_running = false
 
     begin
-      Net::SSH.start( server.host, server.user, :password => server.pass ) do|ssh|
+      Net::SSH.start( server.host, server.user, :password => server.pass, :timeout => 5) do|ssh|
         output = ssh.exec!("echo true")
         @server_status = (output === "true\n")
         server.setup_info = ""
