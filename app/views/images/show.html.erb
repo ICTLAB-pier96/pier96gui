@@ -13,4 +13,16 @@
   <%= @image.date_added %>
 </p>
 
+<p>
+  <strong>Dockerfile:</strong>
+  <%= @image.filename %>
+</p>
+
+<%= form_tag({action: :upload}, multipart: true) do %>
+  <%= file_field_tag 'file' %>
+  <%= submit_tag 'file' %>
+<% end %>
+
+
+
 <%= link_to 'Back', images_path %>

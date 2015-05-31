@@ -1,4 +1,4 @@
-<%= form_for @image do |f| %>
+<%= form_for @image,:html => {:multipart => true } do |f| %>
  
   <% if @image.errors.any? %>
     <div id="error_explanation">
@@ -22,6 +22,10 @@
   <p>
     <%= f.label :base_image %><br>
     <%= f.text_field :base_image %>
+  </p>
+  <p>
+    <%= f.label :file %><br>
+    <%= f.file_field :file %>
   </p>
   <%= f.hidden_field :date_added, :value => Time.new.inspect %>
   <p>
