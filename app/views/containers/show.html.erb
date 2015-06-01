@@ -1,0 +1,25 @@
+<p>
+  <strong>Name:</strong>
+  <%= @container.name %>
+</p>
+ 
+<p>
+  <strong>Image:</strong>
+  <%= @image.base_image %>
+</p>
+
+<p>
+  <strong>Server:</strong>
+  <%= @server.name %>
+</p>
+<p>
+  <strong>Local Port:</strong>
+  <%= @container.local_port %>
+</p>
+<p>
+  <strong>Host Port:</strong>
+  <%= @container.host_port %>
+</p>
+
+ <%= link_to "Remove",container_destroy_path(id: @container.id), class: "blue darken-3 btn" %>
+

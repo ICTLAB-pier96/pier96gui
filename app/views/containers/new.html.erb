@@ -18,11 +18,19 @@
     <%= f.select("image_id", images_select_collect, { include_blank: false }) %>
   </div>
   <p>
+    <%= f.label :local_port %><br>
+    <%= f.text_area :local_port %>
+  </p>
+  <p>
+    <%= f.label :host_port %><br>
+    <%= f.text_area :host_port %>
+  </p>
+  <p>
     <%= f.label :description %><br>
     <%= f.text_area :description %>
   </p>
 
   <p>
-    <%= f.submit %>
+    <%= f.submit "Save", class: "blue darken-3 btn" %>
   </p>
 <% end %>

@@ -2181,7 +2181,8 @@ table, th, td {
 
 table {
   width: 100%;
-  display: table; }
+  display: table; 
+  margin-top: 1em;}
   table.bordered tr {
     border-bottom: 1px solid #d0d0d0; }
   table.striped tbody tr:nth-child(odd) {

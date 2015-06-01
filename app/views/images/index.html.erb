@@ -1,6 +1,7 @@
 <h1>Listing Images</h1>
-<%= link_to 'New image', new_image_path %>
-<table>
+<%= link_to 'New image', new_image_path, class: "blue darken-3 btn" %>
+<br>
+<table class="striped">
   <tr>
     <th>Title</th>
     <th>Created</th>
@@ -10,14 +11,9 @@
  
   <% @images.each do |image| %>
     <tr>
-      <td><%= image.title %></td>
+      <td><%= link_to "#{image.title}", image_path(:id => image.id) %></td>
       <td><%= image.date_added %></td>
       <td><%= image.base_image %></td>
-      <td><%= link_to 'Show', image_path(image) %></td>
-      <td><%= link_to 'Edit', edit_image_path(image) %></td>
-      <td><%= link_to 'Destroy', image_path(image),
-              method: :delete,
-              data: { confirm: 'Are you sure?' } %></td>
-    </tr>
+      <td><%= link_to 'Edit', edit_image_path(image) , class: "blue darken-3 btn"%></td>
   <% end %>
 </table>

@@ -51,7 +51,7 @@ class ImagesController < ApplicationController
     @image = Image.find(params[:id])
     @image.destroy
  
-    redirect_to Images_path
+    redirect_to action: :index
   end
 
   def upload

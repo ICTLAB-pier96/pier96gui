@@ -1,6 +1,20 @@
 module ContainersDeployHelper
     require 'docker'
-    def self.deploy(args)
+
+    def self.deploy(container)
+        dir = Image.find(container.image_id).title
+        host = Server.find(container.server_id).host
+        localport = container.local_port
+        hostport = container.host_port
+
+        ContainersDeployHelper.run(
+            {:dir => Rails.root.join('public', 'images', dir), 
+            :image => "#{dir}",
+            :host => host,
+            :c_args => {"ExposedPorts" => { "#{localport}/tcp" => {} }, "PortBindings" => { "#{localport}/tcp" =>[{ "HostPort" => "#{hostport}" }] }}})
+    end
+
+    def self.run(args)
         begin
             host = args.fetch(:host)
             name = args.fetch(:git_clone,{:name => nil}).fetch(:name)
