@@ -6,6 +6,8 @@ class CreateContainers < ActiveRecord::Migration
       t.string :ports
       t.text :description
       t.integer :image_id
+      t.integer :host_port
+      t.integer :local_port
 
       t.timestamps null: false
     end
