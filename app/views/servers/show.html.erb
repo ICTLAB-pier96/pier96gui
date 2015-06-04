@@ -14,13 +14,6 @@
   <% else %>
     <span class="btn red disabled white-text">Offline</span>
   <% end %></td>
-
-  <% if @server.setup %>
-    <a class="btn green disabled white-text">Ready</a>
-  <% elsif !@server.setup %>
-    <a class="btn red white-text tooltipped" data-position="right" data-delay="50" data-tooltip="<%= @server.setup_info %>" href="#">Not ready
-    </a>
-  <% end %></td>
 </p>
 <p>
   <strong>Actions: </strong>

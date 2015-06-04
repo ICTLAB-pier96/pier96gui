@@ -6,8 +6,10 @@ class CreateServers < ActiveRecord::Migration
       t.string :user
       t.string :pass
       t.boolean :status
-      t.boolean :setup
-      t.string :setup_info
+      t.string :os
+      t.string :storage
+      t.string :total_containers
+      t.string :total_images
 
       t.timestamps null: false
     end
