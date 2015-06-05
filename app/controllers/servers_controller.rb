@@ -1,5 +1,5 @@
 class ServersController < ApplicationController
-
+  respond_to :html, :json
 
   def new
   end
@@ -12,9 +12,14 @@ class ServersController < ApplicationController
   end
 
   def index
-    require 'rubygems'
-    require 'net/ssh'
     @servers = Server.all
+    respond_to do |format|
+      format.html
+      format.json{
+        render :json => @servers.to_json(:only => [ :id, :name, :host ])
+      }
+    end
+    
   end
   
   def destroy
@@ -31,6 +36,12 @@ class ServersController < ApplicationController
 
   def show
     @server = Server.find(params[:id])
+    respond_to do |format|
+      format.html
+      format.json{
+        render :json => @server.to_json(:only => [ :id, :name, :host ])
+      }
+    end
   end
 
   private
