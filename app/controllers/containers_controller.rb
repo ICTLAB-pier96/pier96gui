@@ -33,6 +33,7 @@ class ContainersController < ApplicationController
         @server = Server.find(@container.server_id)
     end
 
+
     private
         def container_params
             params.require(:container).permit(:name, :server_id, :image_id, :host_port, :local_port, :description)
