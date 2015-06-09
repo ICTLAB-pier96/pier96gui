@@ -1,6 +1,5 @@
 class WelcomeController < ApplicationController
   def index
-
     @series = []
 
     @servers = Server.all

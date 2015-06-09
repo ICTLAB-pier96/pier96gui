@@ -1,3 +1,4 @@
+# ServerStatusWorker is a process that should run in the background, it is used to check the status of the server and daemon
 class ServersStatusWorker
 
   require 'net/http'
