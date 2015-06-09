@@ -11,19 +11,24 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150531141726) do
+ActiveRecord::Schema.define(version: 20150609090839) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "containers", force: :cascade do |t|
+    t.string   "args"
+    t.string   "command"
+    t.date     "created"
+    t.text     "description"
+    t.string   "image"
+    t.string   "labels"
     t.string   "name"
+    t.string   "local_port"
+    t.string   "host_port"
+    t.string   "state"
     t.integer  "server_id"
     t.string   "ports"
-    t.text     "description"
-    t.integer  "image_id"
-    t.integer  "host_port"
-    t.integer  "local_port"
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
   end
@@ -33,6 +38,13 @@ ActiveRecord::Schema.define(version: 20150531141726) do
     t.string   "date_added"
     t.string   "base_image"
     t.string   "filename"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "server_loads", force: :cascade do |t|
+    t.integer  "server_id"
+    t.integer  "ram_usage"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -50,6 +62,8 @@ ActiveRecord::Schema.define(version: 20150531141726) do
     t.string   "total_images"
     t.datetime "created_at",       null: false
     t.datetime "updated_at",       null: false
+    t.string   "ram_usage"
+    t.string   "disk_space"
   end
 
 end

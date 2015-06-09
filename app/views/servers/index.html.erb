@@ -8,7 +8,9 @@
     <th>Host</th>
     <th>Status</th>
     <th>Docker Daemon</th>
-    <th>RAM</th>
+    <th>Total RAM</th>
+    <th>RAM Usage</th>
+    <th>Available Disk space</th>
     <th>Operating System</th>
     <th>Containers</th>
     <th>Images</th>
@@ -33,6 +35,8 @@
         <% end %>
       </td>
       <td><%= s.storage %></td>
+      <td><%= s.ram_usage %> %</td>
+      <td><%= s.disk_space %></td>
       <td><%= s.os %></td>
       <td><%= s.total_containers %></td>
       <td><%= s.total_images %></td>

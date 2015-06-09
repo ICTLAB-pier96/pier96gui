@@ -6,6 +6,7 @@ class CreateServers < ActiveRecord::Migration
       t.string :user
       t.string :password
       t.string :daemon_status
+      t.string :ram_usage
       t.boolean :status
       t.string :os
       t.string :storage

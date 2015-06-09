@@ -1,4 +1,51 @@
-<br>
-<%= image_tag("http://i60.tinypic.com/2a5dl3o.jpg") %>
-<%= image_tag("http://i60.tinypic.com/2a5dl3o.jpg") %>
-<%= image_tag("http://i60.tinypic.com/2a5dl3o.jpg") %>
+<script src="http://code.highcharts.com/highcharts.js"></script>
+<script src="http://code.highcharts.com/modules/exporting.js"></script>
+
+<div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+
+
+<script>
+$(function () {
+    $('#container').highcharts({
+        title: {
+            text: 'RAM usage per server',
+            x: -20 //center
+        },
+        xAxis: {
+            categories: ['00:00', '01:00', '02:00', '03:00', '04:00', '05:00','06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00','17:00', '18:00', '19:00', '20:00', '21:00', '22:00','23:00','00:00']
+        },
+        yAxis: {
+            title: {
+                text: 'Average RAM usage (%)'
+            },
+            plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }]
+        },
+        tooltip: {
+            valueSuffix: '%'
+        },
+
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'middle',
+            borderWidth: 0
+        },
+        plotOptions: {
+            series: {
+                dataLabels:{
+                    enabled:true,
+                    formatter:function(){
+                        if(this.y > 0)
+                            return this.y;
+                    }
+                }
+            }
+        },
+        series: <%= @series.to_json.html_safe %>
+    });
+});
+</script>
