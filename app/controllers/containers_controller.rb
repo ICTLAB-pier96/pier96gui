@@ -24,10 +24,12 @@ class ContainersController < ApplicationController
         Container.update_all_containers
         @containers = Container.all
     end
+    
     def show
         @container = Container.find(params[:id])
         @server = Server.find(@container.server_id)
     end
+
 
     private
         def container_params

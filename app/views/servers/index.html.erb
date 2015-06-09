@@ -1,11 +1,13 @@
 <h1 class="blue-text text-darken-3">Servers</h1>
 <%= link_to 'Add server', new_server_path, class: "btn blue darken-4" %> 
+<%= link_to 'Ping servers', servers_refresh_path, class: "btn blue darken-4" %>
 <br>
 <table class="striped">
   <tr>
     <th>Name</th>
     <th>Host</th>
     <th>Status</th>
+    <th>Docker Daemon</th>
     <th>RAM</th>
     <th>Operating System</th>
     <th>Containers</th>
@@ -21,6 +23,13 @@
           <a class="btn green disabled white-text">Online</a>
         <% else %>
           <span class="btn red disabled white-text">Offline</span>
+        <% end %>
+      </td>
+      <td>
+        <% if s.daemon_status %>
+          <a class="btn green disabled white-text">Running</a>
+        <% else %>
+          <span class="btn red disabled white-text">Not running</span>
         <% end %>
       </td>
       <td><%= s.storage %></td>

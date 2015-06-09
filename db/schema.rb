@@ -29,8 +29,6 @@ ActiveRecord::Schema.define(version: 20150609085812) do
     t.string   "state"
     t.integer  "server_id"
     t.string   "ports"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
   end
 
   create_table "images", force: :cascade do |t|
@@ -38,13 +36,6 @@ ActiveRecord::Schema.define(version: 20150609085812) do
     t.string   "date_added"
     t.string   "base_image"
     t.string   "filename"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "server_loads", force: :cascade do |t|
-    t.integer  "server_id"
-    t.integer  "ram_usage"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -62,7 +53,6 @@ ActiveRecord::Schema.define(version: 20150609085812) do
     t.string   "total_images"
     t.datetime "created_at",       null: false
     t.datetime "updated_at",       null: false
-    t.string   "ram_usage"
   end
 
 end

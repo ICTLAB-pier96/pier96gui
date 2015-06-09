@@ -4,7 +4,8 @@ class CreateServers < ActiveRecord::Migration
       t.string :name
       t.string :host
       t.string :user
-      t.string :pass
+      t.string :password
+      t.string :daemon_status
       t.boolean :status
       t.string :os
       t.string :storage
