@@ -1,16 +1,27 @@
 class ServerSetupWorker
-  def self.perform
-    server = Server.find(1)
+  def self.perform(id)
+    server = Server.find(id)
     start_connection(server)
   end
 
-  def start_connection(server)
+  def self.start_connection(server)
     Net::SSH.start( server.host, server.user, :password => server.password) do|ssh|
-      if server.daemon
+        
+      check_docker = ssh.exec!("dpkg-query -l docker.io")
+      docker_not_correctly_installed = check_docker.match(/docker.io /).nil?
+
+      if docker_not_correctly_installed
+        install_docker(server.id,ssh)
+      end
+
+      if !server.daemon_status
+        run_docker_daemon(server.id, ssh)
+      end
     end
   end
 
-  def install_docker(server, ssh)
+  def self.install_docker(id, ssh)
+    server = Server.find(id)
     if server.os.include? "Ubuntu"
       output = ssh.exec!("apt-get install -y docker.io")
     elsif server.os.include? "Debian"
@@ -27,7 +38,7 @@ class ServerSetupWorker
     puts outpu
   end
 
-  def run_docker_daemon(server, ssh)
-    ssh.exec("killall -9 docker; rm /var/run/docker.pid")
+  def self.run_docker_daemon(server, ssh)
+    ssh.exec("killall -9 docker; rm /var/run/docker.pid; nohup docker -H tcp://#{server.host}:5555 -H unix:///var/run/docker.sock -d > foo.out 2> foo.err < /dev/null &")
   end
 end

@@ -38,7 +38,7 @@
       <td><%= s.ram_usage %> %</td>
       <td><%= s.disk_space %></td>
       <td><%= s.os %></td>
-      <td><%= s.total_containers %></td>
+      <td><%= Container.where(server_id: s.id).count %>/<%= s.total_containers %></td>
       <td><%= s.total_images %></td>
     </tr>
   <% end %>

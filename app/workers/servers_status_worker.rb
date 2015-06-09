@@ -59,6 +59,7 @@ class ServersStatusWorker
               server.save
           end
         rescue Errno::ECONNREFUSED
+            puts "Errno::ECONNREFUSED: Connection refused."
             server.daemon_status = false
             server.save
         rescue Timeout::Error

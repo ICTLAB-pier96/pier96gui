@@ -43,4 +43,5 @@
   <%= @server.total_images %>
 </p>
   <%= link_to "Remove",server_destroy_path(id: @server.id), class: "blue darken-3 btn" %>
+  <%= link_to "Fix setup",server_setup_path(id: @server.id), class: "blue darken-3 btn" %>
 </p>
