@@ -1,31 +1,46 @@
 class WelcomeController < ApplicationController
   def index
-    
 
-    # @servers = []
-    # @server_loads.each_with_index do |s,i|
-    #     hour_group = ServerLoad.where("created_at > :day_ago",{day_ago: 1.day.ago}).where(id: s.id).group_by {|ticker| ticker.created_at.hour}
-
-    #     group_average_array = [0]*24
-    #     hour_group.each_pair do |idx, arr|
-    #         group_average_array[idx] = (arr.map(&:ram_usage).sum)/arr.size
-    #     end
-
-    #     @servers[i] = {name: Server.find(s.server_id).name, data: group_average_array}
-    #  end
     @series = []
 
     @servers = Server.all
+
+    load_hash = {}
     @servers.each do |s|
-      hour_group = ServerLoad.where(server_id: s.id).where("created_at > :day_ago",{day_ago: 1.day.ago}).group_by {|ticker| ticker.created_at.hour}
-      group_average_array = [0]*24
-      hour_group.each_pair do |idx, arr|
-        group_average_array[idx] = (arr.map(&:ram_usage).sum)/arr.size
+      hash = {}
+      ServerLoad.where(server_id: s.id).each do |s|
+        if hash[s.created_at.hour+2].nil?
+          hash[s.created_at.hour+2] = [s.ram_usage]
+        else
+          hash[s.created_at.hour+2] = hash[s.created_at.hour+2].push(s.ram_usage)
+        end
       end
-       @series.push({name: s.name, data: group_average_array})
+      load_hash[s.id] = hash
     end
-    puts @series
-    @categories =["00:00","01:00", "02:00"]
-    # @series = @series.map{|k| "{name: '#{k[:name]}', data: #{k[:data]} }" }
+
+    load_hash.each do |key, hash|
+      hash.each do |hour, value|
+        avg = (value.sum/value.size)
+        load_hash[key][hour] = avg
+      end
+    end
+
+    @categories = []
+    @servers.each do |s|
+      data = []
+      time = Time.now.hour
+      @categories.push("#{time}:00")
+      data.push(load_hash[s.id][time])
+      i = time -1 
+      while i != time
+        @categories.push("#{i}:00")
+        data.push(load_hash[s.id][i])
+        i = i - 1
+        i = 23 if i == -1
+        puts i
+      end
+      @series.push({name: s.name, data: data.reverse })
+      @categories = @categories.reverse
+    end
   end
 end
