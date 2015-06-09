@@ -11,49 +11,58 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150601090424) do
+ActiveRecord::Schema.define(version: 20150609085812) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "containers", force: :cascade do |t|
+    t.string   "args"
+    t.string   "command"
+    t.date     "created"
+    t.text     "description"
+    t.string   "image"
+    t.string   "labels"
     t.string   "name"
+    t.string   "local_port"
+    t.string   "host_port"
+    t.string   "state"
     t.integer  "server_id"
     t.string   "ports"
-    t.text     "description"
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
-    t.string   "hostport"
-    t.string   "localport"
-    t.integer  "image_id"
-    t.string   "host_port"
-    t.string   "local_port"
-  end
-
-  create_table "data_files", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "images", force: :cascade do |t|
     t.string   "title"
     t.string   "date_added"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.string   "base_image"
     t.string   "filename"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "server_loads", force: :cascade do |t|
+    t.integer  "server_id"
+    t.integer  "ram_usage"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "servers", force: :cascade do |t|
     t.string   "name"
     t.string   "host"
     t.string   "user"
-    t.string   "pass"
+    t.string   "password"
+    t.string   "daemon_status"
     t.boolean  "status"
-    t.boolean  "setup"
-    t.string   "setup_info"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.string   "os"
+    t.string   "storage"
+    t.string   "total_containers"
+    t.string   "total_images"
+    t.datetime "created_at",       null: false
+    t.datetime "updated_at",       null: false
+    t.string   "ram_usage"
   end
 
 end
