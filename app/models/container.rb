@@ -10,10 +10,20 @@ class Container < ActiveRecord::Base
 				s_con = Docker::Container.all(:all => false)
 				puts s_con
 				s_con.each do |sc|
-					c = Container.parse_container(sc.json, s)
-					puts c
+					Container.parse_container(sc.json, s)
 				end
 			end
+		end
+	end
+
+	def self.update_single_container(id, s)
+		require 'docker'	
+		Docker.url = 's.host'+':5555'
+		if s.daemon_status
+			Docker.url = "tcp://"+ s.host + ":5555"
+			result = Docker::Container.get(id)
+			puts result.json
+			Container.parse_container(result.json, s)
 		end
 	end
 
@@ -40,6 +50,5 @@ class Container < ActiveRecord::Base
 		end
 		id = parsedparams[:id]
 		Container.exists?(id) ? (container = Container.find(id).update_attributes(parsedparams)) : (container = Container.new(parsedparams); container.save)
-		container
 	end
 end
