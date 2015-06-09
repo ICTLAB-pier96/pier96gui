@@ -17,11 +17,8 @@ class ServersStatusWorker
 #   - Nothing
   def self.perform
     servers = Server.all
-    statusus = get_daemon_status(servers)
-    offline = statusus.select { |key, value| value[:daemon_status] == false }
-    after_login = login_servers(offline)
-    statusus.merge!(after_login)
-    update_server_attributes(statusus)
+    get_daemon_status(servers)
+    get_server_status(servers)
   end
 
 
@@ -50,17 +47,31 @@ class ServersStatusWorker
               url2 = URI.parse(URI.encode("http://" + server.host.gsub("http://","")+":5555/info"))
               request1 = Net::HTTP::Get.new(url2.request_uri)
               @response1 = connection.request(request1)
-              @statuses[server] = JSON.parse(@response1.body, :symbolize_names => true).merge({:status => true, :daemon_status => true})
+              status =  JSON.parse(@response1.body, :symbolize_names => true)
+              server.status = true
+              server.daemon_status = true
+              helper = Object.new.extend(ActionView::Helpers::NumberHelper) 
+              server.storage = helper.number_to_human_size(status[:MemTotal])
+              server.ram_usage = status[:ram_usage]
+              server.os = status[:OperatingSystem]
+              server.total_containers = status[:Containers]
+              server.total_images = status[:Images]
+              server.save
           end
         rescue Errno::ECONNREFUSED
-            @statuses[server] = {:status => false, :daemon_status => false}
+            puts "Errno::ECONNREFUSED: Connection refused."
+            server.daemon_status = false
+            server.save
         rescue Timeout::Error
             puts "Timeout::Error: Can't connect to server."
-            @statuses[server] = {:status => false, :daemon_status => false}
+            server.daemon_status = false
+            server.save
         rescue SocketError
             puts "SocketError: Something unexpected happened."
-            @statuses[server] = {:status => false, :daemon_status => false}
+            server.daemon_status = false
+            server.save
         end
+
       end
     }.join
     return @statuses
@@ -78,54 +89,45 @@ class ServersStatusWorker
 #   - +Errno::ECONNREFUSED+ -> if the server is not reachable.
 #   - +Timeout::Error+ -> if the server takes too long to respond back.
 #   - +SocketError+ -> if something unknowns happens with ssl.
-  def self.login_servers(statusus)
+  def self.get_server_status(servers)
     @statuses = {}
       Thread.new{
-        statusus.each do |server, status|
+        servers.each do |server|
           begin
             Net::SSH.start( server.host, server.user, :password => server.password) do|ssh|
-              output = ssh.exec!("echo true")
-              @statuses[server] = {:status => (output === "true\n"), :daemon_status => false}
+              status = ssh.exec!("echo true")
+              ram_usage = ssh.exec!("free | grep Mem | awk '{print $3/$2 * 100.0}'")
+              disk_space = ssh.exec!("df | tr -s ' ' $'\t' | grep /dev/ | cut -f4")
+              helper = Object.new.extend(ActionView::Helpers::NumberHelper) 
+              server.ram_usage = ram_usage.to_i.round
+              server.disk_space = helper.number_to_human_size((disk_space.to_i*1024))
+              server_load = ServerLoad.new
+              server_load.server_id = server.id 
+              server_load.ram_usage = ram_usage.to_i
+              server_load.save
+              server.status = (status === "true\n")
+              server.save
             end
           rescue Timeout::Error
             puts "Timeout::Error: Can't connect to server."
-            @statuses[server] = {:status => false, :daemon_status => false}
+            server.status = false
+            server.save
           rescue Net::SSH::AuthenticationFailed
             #  TODO: let user know that the user/pass failed to login
             puts "Net::SSH::Authenticationfailed:: Incorrect user/password combination."
-            @statuses[server] = {:status => false, :daemon_status => false}
+            server.status = false
+            server.save
           rescue Errno::ECONNREFUSED
              puts "Errno::ECONNREFUSED: Server does open the connection."
-            @statuses[server] = {:status => false, :daemon_status => false}
+            server.status = false
+            server.save
           rescue SocketError
             puts "SocketError: Something unexpected happened."
-            @statuses[server] = {:status => false, :daemon_status => false}
+            server.status = false
+            server.save
           end
         end
-      }
+      }.join
       return @statuses
-  end
-
-# This method is to update the server attributes based on the status they have.
-# The argument it takes is a hash of hashes, the second hash contains the needed information about the server.
-#
-# * *Args*    :
-#   - +statusus+ -> hash of hashes, where the keys are the servers that does not have a daemon running, the second hash contains information about the status.
-# * *Returns* :
-#   - Nothing
-# * *Raises* :
-#   - No exceptions
-  def self.update_server_attributes(statusus)
-    
-    statusus.each do |server, value|
-      
-      server.status = value[:status]
-      server.daemon_status = value[:daemon_status]
-      server.storage = number_to_human_size(value[:MemTotal])
-      server.os = value[:OperatingSystem]
-      server.total_containers = value[:Containers]
-      server.total_images = value[:Images]
-      server.save
-    end
   end
 end

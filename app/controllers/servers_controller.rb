@@ -13,6 +13,7 @@ class ServersController < ApplicationController
 
   def index
     @servers = Server.all
+    puts @servers.inspect
     respond_to do |format|
       format.html
       format.json{
@@ -31,6 +32,11 @@ class ServersController < ApplicationController
 
   def refresh
     ServersStatusWorker.perform
+    redirect_to action: :index
+  end
+
+  def setup
+    ServerSetupWorker.perform(params[:id])
     redirect_to action: :index
   end
 
