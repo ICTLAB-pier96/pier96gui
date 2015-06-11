@@ -49,28 +49,36 @@ class Container < ActiveRecord::Base
 	##
 	#Parses json into a valid container, does both creating and updating
 	def self.parse_container(params, host)
+		puts "JSON PARAMS /n"
 		puts params
 		parsedparams = Hash.new
 
 		parsedparams[:id] = params["Id"]
-		parsedparams[:command] = params["Command"]
-		parsedparams[:created] = params["Created"]
-		parsedparams[:image] = params["Config"]["Image"]
-		parsedparams[:labels]= params["Labels"]
-		parsedparams[:name] = params["Name"]	
-		parsedparams[:state] = params["State"]["Running"]
+		parsedparams[:command] = params["Command"] if params["Command"]
+		parsedparams[:created] = params["Created"] if params["Created"]
+		parsedparams[:image] = params["Config"]["Image"] if params["Config"]["Image"]
+		parsedparams[:labels]= params["Labels"] if params["Labels"]
+		parsedparams[:name] = params["Name"] if params["Name"]
+		parsedparams[:state] = params["State"]["Running"] if params["State"]["Running"]
 		parsedparams[:server_id] = host.id
 
-		params["HostConfig"]["PortBindings"].each do |p|
-			parsedparams[:local_port] = p[0].partition(/\//).first
-			parsedparams[:host_port] = p[1][0]["HostPort"]
+		puts "PARSED PARAMS BEFORE .EACH /n"
+		puts parsedparams
+		if params["HostConfig"]["PortBindings"]
+			params["HostConfig"]["PortBindings"].each do |p|
+				parsedparams[:local_port] = p[0].partition(/\//).first
+				parsedparams[:host_port] = p[1][0]["HostPort"]
+			end
 		end
 		
 		parsedparams[:args] = ""
 		params["Args"].each do |str|
 			parsedparams[:args] += str + " "
-		end
+		end		
+
 		id = parsedparams[:id]
-		Container.exists?(id) ? (container = Container.find(id).update_attributes(parsedparams)) : (container = Container.new(parsedparams); container.save)
+		puts id
+		container = Container.new(parsedparams); container.save
+		# Container.exists?(id) ? (container = Container.find(id).update_attributes(parsedparams)) : (container = Container.new(parsedparams); container.save)
 	end
 end

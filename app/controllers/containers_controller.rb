@@ -8,9 +8,10 @@ class ContainersController < ApplicationController
         require 'docker'
         server = Server.find(container_params["server_id"])
         Docker.url = "tcp://"+server.host+":5555/"
-        customargs = {"ExposedPorts" => { "#{container_params["localport"]}/tcp" => {} }, 
-                    "PortBindings" => { "#{container_params["localport"]}/tcp" => [{ "HostPort" => "#{container_params["hostport"]}" }] }}
-        customargs["Image"] = "ubuntu"
+        customargs = {}
+        # customargs = {"ExposedPorts" => { "#{container_params["localport"]}/tcp" => {} }, 
+                    # "PortBindings" => { "#{container_params["localport"]}/tcp" => [{ "HostPort" => "#{container_params["hostport"]}" }] }}
+        customargs["Image"] = "nginx"
         customargs["Name"] = container_params["name"] 
         c = Docker::Container.create(customargs)
         c.start
