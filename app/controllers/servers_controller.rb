@@ -17,6 +17,11 @@ class ServersController < ApplicationController
     respond_to do |format|
       format.html
       format.json{
+        image = params[:image]
+        if !image.nil?
+          server_ids = Container.all.where(image: image).map{|c| c.server_id}
+          @servers = Server.find(server_ids)
+        end
         render :json => @servers.to_json(:only => [ :id, :name, :host ])
       }
     end
@@ -31,12 +36,12 @@ class ServersController < ApplicationController
   end
 
   def refresh
-    ServersStatusWorker.perform
+    ServersStatusWorker.delay.perform
     redirect_to action: :index
   end
 
   def setup
-    ServerSetupWorker.perform(params[:id])
+    ServerSetupWorker.delay.perform(params[:id])
     redirect_to action: :index
   end
 
