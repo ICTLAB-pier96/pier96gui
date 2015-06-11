@@ -1,4 +1,51 @@
-<br>
-<%= image_tag("http://i60.tinypic.com/2a5dl3o.jpg") %>
-<%= image_tag("http://i60.tinypic.com/2a5dl3o.jpg") %>
-<%= image_tag("http://i60.tinypic.com/2a5dl3o.jpg") %>
+<script src="http://code.highcharts.com/highcharts.js"></script>
+<script src="http://code.highcharts.com/modules/exporting.js"></script>
+
+<div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+
+
+<script>
+$(function () {
+    $('#container').highcharts({
+        title: {
+            text: 'RAM usage per server',
+            x: -20 //center
+        },
+        xAxis: {
+            categories: <%= @categories.to_json.html_safe %>
+        },
+        yAxis: {
+            title: {
+                text: 'Average RAM usage (%)'
+            },
+            plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }]
+        },
+        tooltip: {
+            valueSuffix: '%'
+        },
+
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'middle',
+            borderWidth: 0
+        },
+        plotOptions: {
+            series: {
+                dataLabels:{
+                    enabled:true,
+                    formatter:function(){
+                        if(this.y > 0)
+                            return this.y;
+                    }
+                }
+            }
+        },
+        series: <%= @series.to_json.html_safe %>
+    });
+});
+</script>

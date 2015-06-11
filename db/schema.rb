@@ -11,12 +11,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150609085812) do
+ActiveRecord::Schema.define(version: 20150609201545) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "containers", force: :cascade do |t|
+  create_table "containers", id: false, force: :cascade do |t|
+    t.string   "id",          null: false
     t.string   "args"
     t.string   "command"
     t.date     "created"
@@ -29,6 +30,8 @@ ActiveRecord::Schema.define(version: 20150609085812) do
     t.string   "state"
     t.integer  "server_id"
     t.string   "ports"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
   end
 
   create_table "images", force: :cascade do |t|
@@ -40,12 +43,19 @@ ActiveRecord::Schema.define(version: 20150609085812) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "server_loads", force: :cascade do |t|
+    t.integer  "server_id"
+    t.integer  "ram_usage"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "servers", force: :cascade do |t|
     t.string   "name"
     t.string   "host"
     t.string   "user"
     t.string   "password"
-    t.string   "daemon_status"
+    t.boolean  "daemon_status"
     t.boolean  "status"
     t.string   "os"
     t.string   "storage"
@@ -53,6 +63,8 @@ ActiveRecord::Schema.define(version: 20150609085812) do
     t.string   "total_images"
     t.datetime "created_at",       null: false
     t.datetime "updated_at",       null: false
+    t.string   "ram_usage"
+    t.string   "disk_space"
   end
 
 end

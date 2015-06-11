@@ -16,8 +16,32 @@
   <% end %></td>
 </p>
 <p>
-  <strong>Actions: </strong>
+  <strong>Daemon: </strong>
+  <% if @server.daemon_status %>
+    <a class="btn green disabled white-text">Running</a>
+  <% else %>
+    <span class="btn red disabled white-text">Not running</span>
+  <% end %></td>
+</p>
+<p>
+<p>
+  <strong>Total RAM:</strong>
+  <%= @server.storage %>
+</p>
+
+<p>
+  <strong>RAM Usage:</strong>
+  <%= @server.ram_usage %>%
+</p>
+<p>
+  <strong>Containers:</strong>
+  <%= @server.total_containers %>
+</p>
+
+<p>
+  <strong>Images:</strong>
+  <%= @server.total_images %>
+</p>
   <%= link_to "Remove",server_destroy_path(id: @server.id), class: "blue darken-3 btn" %>
-  <%= link_to 'Setup', server_setup_path(:id => @server.id), class: "blue darken-3 btn" %>
-  <a class="blue darken-3 btn">Configure</a>
+  <%= link_to "Fix setup",server_setup_path(id: @server.id), class: "blue darken-3 btn" %>
 </p>
