@@ -1,10 +1,27 @@
 class Container < ActiveRecord::Base
+	##
+	#Instance methods
+	##
+	#Overrides ActiveRecord's destroy method to also destroy the serverside container
+	def destroy
+		require 'docker'	
+		server = Server.find(self.server_id)
+		Docker.url = "tcp://#{server.host}:5555"
+		container = Docker::Container.get(self.id)
+		container.delete(:force => true)
+		super
+	end
+
+
+	##
+	#Class methods 
+	##
+	#Updates all existing and new serverside records of containers
 	def self.update_all_containers
 		require 'docker'	
 		servers = Server.all
 		containers = []
 		servers.each do |s| 
-			Docker.url = 's.host'+':5555'
 			if s.daemon_status
 				Docker.url = "tcp://"+ s.host + ":5555"
 				s_con = Docker::Container.all(:all => false)
@@ -16,6 +33,8 @@ class Container < ActiveRecord::Base
 		end
 	end
 
+	##
+	#updates or creates(db entry) for a single container 
 	def self.update_single_container(id, s)
 		require 'docker'	
 		Docker.url = 's.host'+':5555'
@@ -27,7 +46,10 @@ class Container < ActiveRecord::Base
 		end
 	end
 
+	##
+	#Parses json into a valid container, does both creating and updating
 	def self.parse_container(params, host)
+		puts params
 		parsedparams = Hash.new
 
 		parsedparams[:id] = params["Id"]

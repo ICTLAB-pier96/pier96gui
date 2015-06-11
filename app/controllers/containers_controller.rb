@@ -5,10 +5,21 @@ class ContainersController < ApplicationController
     end
 
     def create
-        @container = Container.new(container_params)
-        @container.save
+        require 'docker'
+        server = Server.find(container_params["server_id"])
+        Docker.url = "tcp://"+server.host+":5555/"
+        customargs = {"ExposedPorts" => { "#{container_params["localport"]}/tcp" => {} }, 
+                    "PortBindings" => { "#{container_params["localport"]}/tcp" => [{ "HostPort" => "#{container_params["hostport"]}" }] }}
+        customargs["Image"] = "ubuntu"
+        customargs["Name"] = container_params["name"] 
+        c = Docker::Container.create(customargs)
+        c.start
+        Container.parse_container(c.json, server)
+        # @container = ContainersDeployHelper.deploy(container_params)
+        # @container = Container.new(container_params)
+        # @container.save
 
-        ContainersDeployHelper.deploy(@container)
+        # ContainersDeployHelper.deploy(@container)
 
         redirect_to @container
     end
@@ -16,7 +27,6 @@ class ContainersController < ApplicationController
     def destroy
         @container = Container.find(params[:id])
         @container.destroy
-
         redirect_to action: :index
     end
 
@@ -29,7 +39,6 @@ class ContainersController < ApplicationController
         @container = Container.find(params[:id])
         @server = Server.find(@container.server_id)
     end
-
 
     private
         def container_params
