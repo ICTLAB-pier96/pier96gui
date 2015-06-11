@@ -37,11 +37,13 @@ class ServersController < ApplicationController
 
   def refresh
     ServersStatusWorker.delay.perform
+    flash[:notice] = "Servers' status is currently being checked, this could take a while."
     redirect_to action: :index
   end
 
   def setup
     ServerSetupWorker.delay.perform(params[:id])
+    flash[:notice] = "Setup is running, this could take a while."
     redirect_to action: :index
   end
 
