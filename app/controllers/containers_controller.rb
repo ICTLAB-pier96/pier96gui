@@ -21,10 +21,10 @@ class ContainersController < ApplicationController
     end
 
     def index
-        Container.update_all_containers
+        # Container.update_all_containers
         @containers = Container.all
     end
-    
+
     def show
         @container = Container.find(params[:id])
         @server = Server.find(@container.server_id)
@@ -33,6 +33,6 @@ class ContainersController < ApplicationController
 
     private
         def container_params
-            params.require(:container).permit(:name, :server_id, :image_id, :host_port, :local_port, :description)
+            params.require(:container).permit(:command, :created, :image, :labels, :name, :state, :server_id, :local_port, :host_port, :args)
         end
 end
