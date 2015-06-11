@@ -18,6 +18,7 @@ Rails.application.routes.draw do
   get '/images/:id/destroy', to: 'images#destroy', as: :image_destroy
 
   get '/containers/:id/destroy', to: 'containers#destroy', as: :container_destroy
+
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
 
