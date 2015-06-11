@@ -97,7 +97,7 @@ class ServersStatusWorker
           begin
             Net::SSH.start( server.host, server.user, :password => server.password) do|ssh|
               status = ssh.exec!("echo true")
-              ram_usage = ssh.exec!("free | grep Mem | awk '{print $3/$2 * 100.0}'")
+              ram_usage = ssh.exec!("free | grep Mem | awk '{print $3/($2+$7)*100.0}'")
               disk_space = ssh.exec!("df | tr -s ' ' $'\t' | grep /dev/ | cut -f4")
               helper = Object.new.extend(ActionView::Helpers::NumberHelper) 
               server.ram_usage = ram_usage.to_i.round
