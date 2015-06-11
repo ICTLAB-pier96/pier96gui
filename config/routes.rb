@@ -9,11 +9,13 @@ Rails.application.routes.draw do
 
   resources :images, :containers, :servers
 
+  get '/refresh', to: 'servers#refresh', as: :servers_refresh
   get '/servers/:id/setup', to: 'servers#setup', as: :server_setup
   get '/servers/:id/destroy', to: 'servers#destroy', as: :server_destroy
 
-  get '/images/createexisting', :to => 'images#createexisting', as: :image_createexisting
-  get '/images/createfromfile', to: 'images#createfromfile', as: :image_createfromfile
+
+  post '/images/:id/upload', :to => 'images#upload', as: :image_upload
+  get '/images/:id/destroy', to: 'images#destroy', as: :image_destroy
 
   get '/containers/:id/destroy', to: 'containers#destroy', as: :container_destroy
 

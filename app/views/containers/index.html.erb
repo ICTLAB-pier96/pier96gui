@@ -4,21 +4,26 @@
 <table class="striped">
   <tr>
     <th>Name</th>
+    <th>Arguments</th>
     <th>Server</th>
     <th>Image</th>
-    <th>Ports</th>
-    <th>Description</th>
+    <th>Ports : Host Ports</th>
+    <th>Status
   </tr>
   
-  <% @containers.each do |c| %>
+
+   <% @containers.each do |c| %>
+   <% server = get_server(c.server_id) %>
     <tr>
       <td><%= link_to "#{c.name}", container_path(:id => c.id) %></td>
-      <td><%= c.server.name %></td>
-      <td><%= c.image_id %></td>
-      <td><%= c.local_port %>:<%= c.host_port %></td>
-      <td><%= c.description %></td>
+      <td><%= c.args %>
+      <td><%= server.name %></td>
+      <td><%= c.image %></td>
+      <td><%= c.local_port %> : <%= c.host_port %></td>
+      <td><%= c.state %>
     </tr>
   <% end %>
 </table>
+
 
 
