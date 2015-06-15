@@ -11,9 +11,9 @@
  
   <% @images.each do |image| %>
     <tr>
-      <td><%= image.repo_id %></td>
+      <td><%= image.id %></td>
       <td><%= image.repo %>:<%= image.image %></td>
-      <td><%= image.created %></td>
+      <td><%= image.created_at %></td>
       <td><%= link_to 'Edit', edit_image_path(image) , class: "blue darken-3 btn"%></td>
   <% end %>
 </table>

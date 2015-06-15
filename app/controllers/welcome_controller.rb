@@ -7,7 +7,7 @@ class WelcomeController < ApplicationController
     load_hash = {}
     @servers.each do |s|
       hash = {}
-      ServerLoad.where(server_id: s.id).each do |s|
+      ServerLoad.where(server_id: s.id).where(updated_at: (Time.now - 24.hours)..Time.now).each do |s|
         if hash[s.created_at.hour+2].nil?
           hash[s.created_at.hour+2] = [s.ram_usage]
         else

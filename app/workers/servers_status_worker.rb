@@ -17,6 +17,7 @@ class ServersStatusWorker
 # * *Raises* :
 #   - Nothing
   def self.perform
+    puts "test"
     servers = Server.all
     get_daemon_status(servers)
     get_server_status(servers)
