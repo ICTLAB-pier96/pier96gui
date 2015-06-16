@@ -1,3 +1,4 @@
+#  @author = Patrick
 class ServersController < ApplicationController
   respond_to :html, :json
 
