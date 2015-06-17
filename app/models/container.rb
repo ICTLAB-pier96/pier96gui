@@ -15,23 +15,7 @@ class Container < ActiveRecord::Base
 
 	##
 	#Class methods 
-	##
-	#Updates all existing and new serverside records of containers
-	def self.update_all_containers
-		require 'docker'	
-		servers = Server.all
-		containers = []
-		servers.each do |s| 
-			if s.daemon_status
-				Docker.url = "tcp://"+ s.host + ":5555"
-				s_con = Docker::Container.all(:all => false)
-				puts s_con
-				s_con.each do |sc|
-					Container.parse_container(sc.json, s)
-				end
-			end
-		end
-	end
+
 
 	##
 	#updates or creates(db entry) for a single container 
@@ -49,8 +33,6 @@ class Container < ActiveRecord::Base
 	##
 	#Parses json into a valid container, does both creating and updating
 	def self.parse_container(params, host)
-		puts "JSON PARAMS /n"
-		puts params
 		parsedparams = Hash.new
 
 		parsedparams[:id] = params["Id"]
@@ -62,8 +44,6 @@ class Container < ActiveRecord::Base
 		parsedparams[:state] = params["State"]["Running"] if params["State"]["Running"]
 		parsedparams[:server_id] = host.id
 
-		puts "PARSED PARAMS BEFORE .EACH /n"
-		puts parsedparams
 		if params["HostConfig"]["PortBindings"]
 			params["HostConfig"]["PortBindings"].each do |p|
 				parsedparams[:local_port] = p[0].partition(/\//).first
@@ -77,8 +57,8 @@ class Container < ActiveRecord::Base
 		end		
 
 		id = parsedparams[:id]
-		puts id
-		container = Container.new(parsedparams); container.save
-		# Container.exists?(id) ? (container = Container.find(id).update_attributes(parsedparams)) : (container = Container.new(parsedparams); container.save)
+		Container.exists?(id) ? 
+			(container = Container.find(id).update_attributes(parsedparams)) : 
+			(container = Container.new(parsedparams); container.save)
 	end
 end

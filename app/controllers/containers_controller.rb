@@ -32,7 +32,7 @@ class ContainersController < ApplicationController
     end
 
     def index
-        # Container.update_all_containers
+        Container.update_all_containers
         @containers = Container.all
     end
 
