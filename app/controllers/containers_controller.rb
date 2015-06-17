@@ -6,21 +6,19 @@ class ContainersController < ApplicationController
 
     def create
         require 'docker'
-        server = Server.find(container_params["server_id"])
+        form_params = container_params
+        server = Server.find(form_params["server_id"])
+        image = Image.find(form_params["image_id"])
         Docker.url = "tcp://"+server.host+":5555/"
-        customargs = {}
-        # customargs = {"ExposedPorts" => { "#{container_params["localport"]}/tcp" => {} }, 
-                    # "PortBindings" => { "#{container_params["localport"]}/tcp" => [{ "HostPort" => "#{container_params["hostport"]}" }] }}
-        customargs["Image"] = "nginx"
-        customargs["Name"] = container_params["name"] 
-        c = Docker::Container.create(customargs)
-        c.start
-        Container.parse_container(c.json, server)
-        # @container = ContainersDeployHelper.deploy(container_params)
-        # @container = Container.new(container_params)
-        # @container.save
+        creation_args = {}
+        creation_args["ExposedPorts"] = {"#{form_params["local_port"]}/tcp" => ""}
+        creation_args["HostConfig"] = {"PortBindings" => {"#{form_params["local_port"]}/tcp" => [{"HostPort" => "#{form_params["host_port"]}"}]}}
+        # creation_args["Cmd"] = form_params["command"].split(" ")
+        creation_args["Image"] = "pier96/gui:latest" #image.image 
+        # creation_args["HostName"] = form_params["name"] 
+        c = Docker::Container.create(creation_args)
 
-        # ContainersDeployHelper.deploy(@container)
+        @container = Container.parse_container(c.json, server)
 
         redirect_to @container
     end
@@ -43,6 +41,6 @@ class ContainersController < ApplicationController
 
     private
         def container_params
-            params.require(:container).permit(:command, :created, :image, :labels, :name, :state, :server_id, :local_port, :host_port, :args)
+            params.require(:container).permit(:command, :image_id, :name, :server_id, :local_port, :host_port)
         end
 end

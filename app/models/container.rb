@@ -15,13 +15,24 @@ class Container < ActiveRecord::Base
 
 	##
 	#Class methods 
-
+	def self.update_all_containers
+		require 'docker'	
+		servers = Server.all
+		servers.each do |s| 
+			if s.daemon_status
+				Docker.url = "tcp://"+ s.host + ":5555"
+				all_containers = Docker::Container.all(:all => false)
+				all_containers.each do |c|
+					Container.parse_container(c.json, s)
+				end
+			end
+		end
+	end
 
 	##
 	#updates or creates(db entry) for a single container 
 	def self.update_single_container(id, s)
 		require 'docker'	
-		Docker.url = 's.host'+':5555'
 		if s.daemon_status
 			Docker.url = "tcp://"+ s.host + ":5555"
 			result = Docker::Container.get(id)
@@ -34,7 +45,6 @@ class Container < ActiveRecord::Base
 	#Parses json into a valid container, does both creating and updating
 	def self.parse_container(params, host)
 		parsedparams = Hash.new
-
 		parsedparams[:id] = params["Id"]
 		parsedparams[:command] = params["Command"] if params["Command"]
 		parsedparams[:created] = params["Created"] if params["Created"]
@@ -57,8 +67,10 @@ class Container < ActiveRecord::Base
 		end		
 
 		id = parsedparams[:id]
+		@container
 		Container.exists?(id) ? 
-			(container = Container.find(id).update_attributes(parsedparams)) : 
-			(container = Container.new(parsedparams); container.save)
+			(@container = Container.find(id).update_attributes(parsedparams)) : 
+			(@container = Container.new(parsedparams); @container.save)
+		return @container
 	end
 end
