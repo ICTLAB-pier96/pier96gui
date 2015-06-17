@@ -1,3 +1,4 @@
+# @author = Patrick
 # ServerSetupWorker is a process that should run in the background, it tries to install docker and make sure the daemon is running.
 # Since every distribution has its own commands/packages, not all are supported.
 # Known working distributions:
@@ -17,8 +18,8 @@ class ServerSetupWorker
   def self.perform(id)
     server = Server.find(id)
     start_connection(server)
+    flash[:notice] = "Servers have been checked."
   end
-
 
 # This method creates a ssh connection and checks if it has docker installed and the daemon is running correctly
 #
@@ -83,7 +84,7 @@ class ServerSetupWorker
 #   - Nothing 
   def self.run_docker_daemon(server, ssh)
     stop_docker_daemon(server, ssh)
-    ssh.exec!("nohup docker -H tcp://#{server.host}:5555 -H unix:///var/run/docker.sock -d > foo.out 2> foo.err < /dev/null &")
+    output = ssh.exec!("nohup docker -H tcp://#{server.host}:5555 -H unix:///var/run/docker.sock -d > foo.out 2> foo.err < /dev/null &")
   end
 
 # This method uses the ssh connection and stops the daemon if it is running

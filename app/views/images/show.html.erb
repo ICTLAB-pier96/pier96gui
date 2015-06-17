@@ -1,28 +1,15 @@
 <p>
-  <strong>Title:</strong>
-  <%= @image.title %>
+  <strong>Repository</strong>
+  <%= @image.repo  %>
 </p>
  
 <p>
-  <strong>Base Image:</strong>
-  <%= @image.base_image %>
+  <strong>Image:</strong>
+  <%= @image.image %>
 </p>
 
 <p>
   <strong>Created:</strong>
-  <%= @image.date_added %>
+  <%= @image.created %>
 </p>
-
-<p>
-  <strong>Dockerfile:</strong>
-  <%= @image.filename %>
-</p>
-
-<%= form_tag({action: :upload}, multipart: true) do %>
-  <%= file_field_tag 'file' %>
-  <%= submit_tag 'file' %>
-<% end %>
-
-
- <%= link_to "Remove",image_destroy_path(id: @image.id), class: "blue darken-3 btn" %>
 

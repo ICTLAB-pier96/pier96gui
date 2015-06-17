@@ -1,23 +1,24 @@
 Rails.application.routes.draw do
-  get 'welcome/index'
+  get 'dashboard/index'
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
   # You can have the root of your site routed with "root"
-  root 'welcome#index'
+  root 'dashboard#index'
 
   resources :images, :containers, :servers
 
   get '/refresh', to: 'servers#refresh', as: :servers_refresh
   get '/servers/:id/setup', to: 'servers#setup', as: :server_setup
   get '/servers/:id/destroy', to: 'servers#destroy', as: :server_destroy
-
+  post '/servers/new', to: 'servers#create'
 
   post '/images/:id/upload', :to => 'images#upload', as: :image_upload
   get '/images/:id/destroy', to: 'images#destroy', as: :image_destroy
 
   get '/containers/:id/destroy', to: 'containers#destroy', as: :container_destroy
+
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
 

@@ -27,10 +27,10 @@
     <%= f.label :file %><br>
     <%= f.file_field :file %>
   </p>
+
   <%= f.hidden_field :date_added, :value => Time.new.inspect %>
   <p>
     <%= f.submit "Save", class: "blue darken-3 btn" %> 
-     <%= link_to "Remove",image_destroy_path(id: @image.id), class: "blue darken-3 btn" %>
   </p>
  
 <% end %>

@@ -1,4 +1,78 @@
 <h1>New image</h1>
+<script type="text/javascript">
+$( document ).ready(function() {
+
+  checkSelect();
+
+  function checkSelect(){
+    var selectedCreateOption = $( ".typeselect option:selected" ).val();
+    if(selectedCreateOption == 'createexisting'){
+      $("#fileupload").hide();
+      $("#authenticate").hide();
+    }else if(selectedCreateOption == 'createfromfile'){
+      $("#fileupload").show();
+      $("#authenticate").show();
+    }
+  }
+
+	$(".typeselect").change(function() {
+    checkSelect();
+	});
+
+    $('select').material_select();
+});
+</script> 
+
+<%= form_for @image,:html => {:multipart => true } do |f| %>
  
-<%= render 'form' %>
+  <% if @image.errors.any? %>
+    <div id="error_explanation">
+      <h2>
+        <%= pluralize(@image.errors.count, "error") %> prohibited
+        this image from being saved:
+      </h2>
+      <ul>
+        <% @image.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <select class="typeselect">
+  	<option value="createexisting">Add existing image from repository</option>
+  	<option value="createfromfile">Create and add image from Dockerfile</option>
+  </select>
+  <div id="authenticate">
+    <p>
+      <label for="image_repo_username">Repo Username</label><br>
+      <input type="text" name="image[repo_username]" id="image_repo_username" />
+    </p>
+    <p>
+      <label for="image_repo_password">Repo Password</label><br>
+      <input type="text" name="image[repo_password]" id="image_repo_password" />
+    </p>
+    <p>
+      <label for="image_repo_email">Repo Email</label><br>
+      <input type="text" name="image[repo_email]" id="image_repo_email" />
+    </p>
+  </div>
+  <p>
+    <%= f.label :repo %><br>
+    <%= f.text_field :repo %>
+  </p>
+  <p>
+    <%= f.label :image %><br>
+    <%= f.text_field :image %>
+  </p>
+  <p id="fileupload">
+    <%= f.label :file %><br>
+    <%= f.file_field :file %>
+  </p>
+
+  <%= f.hidden_field :created, :value => Time.new.inspect %>
+  <p>
+    <%= f.submit "Save", class: "blue darken-3 btn" %> 
+  </p>
  
+<% end %>
+
