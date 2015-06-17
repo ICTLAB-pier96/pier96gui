@@ -5,28 +5,19 @@ class Container < ActiveRecord::Base
 	#Overrides ActiveRecord's destroy method to also destroy the serverside container
 	def destroy
 		require 'docker'	
-		server = Server.find(self.server_id)
-		Docker.url = "tcp://#{server.host}:5555"
-		container = Docker::Container.get(self.id)
-		container.delete(:force => true)
+		begin
+			server = Server.find(self.server_id)
+			Docker.url = "tcp://#{server.host}:5555"
+			container = Docker::Container.get(self.id)
+			container.delete(:force => true)
+		rescue 
+		    puts "container not found, deleting db entry"
+		end
 		super
 	end
 
-
-	##
-	#Class methods 
 	def self.update_all_containers
-		require 'docker'	
-		servers = Server.all
-		servers.each do |s| 
-			if s.daemon_status
-				Docker.url = "tcp://"+ s.host + ":5555"
-				all_containers = Docker::Container.all(:all => false)
-				all_containers.each do |c|
-					Container.parse_container(c.json, s)
-				end
-			end
-		end
+		ContainerStatusWorker.perform
 	end
 
 	##
@@ -46,12 +37,11 @@ class Container < ActiveRecord::Base
 	def self.parse_container(params, host)
 		parsedparams = Hash.new
 		parsedparams[:id] = params["Id"]
-		parsedparams[:command] = params["Command"] if params["Command"]
 		parsedparams[:created] = params["Created"] if params["Created"]
 		parsedparams[:image] = params["Config"]["Image"] if params["Config"]["Image"]
 		parsedparams[:labels]= params["Labels"] if params["Labels"]
 		parsedparams[:name] = params["Name"] if params["Name"]
-		parsedparams[:state] = params["State"]["Running"] if params["State"]["Running"]
+		parsedparams[:state] = params["State"] if params["State"]
 		parsedparams[:server_id] = host.id
 
 		if params["HostConfig"]["PortBindings"]
@@ -60,11 +50,19 @@ class Container < ActiveRecord::Base
 				parsedparams[:host_port] = p[1][0]["HostPort"]
 			end
 		end
-		
+		parsedparams[:command] = ""
+
+		if params["Config"]["Cmd"]
+			params["Config"]["Cmd"].each do |str| 
+				parsedparams[:command] += str + " "
+			end
+		end		
+
 		parsedparams[:args] = ""
 		params["Args"].each do |str|
 			parsedparams[:args] += str + " "
 		end		
+
 
 		id = parsedparams[:id]
 		@container

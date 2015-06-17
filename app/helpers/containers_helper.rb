@@ -12,4 +12,10 @@ module ContainersHelper
   	server = Server.find(id)
   end
   
+  def parse_state(container)
+  	puts container.state
+  		state = eval(container.state)
+  	rescue
+  end
+
 end

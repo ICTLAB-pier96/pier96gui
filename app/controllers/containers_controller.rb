@@ -13,8 +13,8 @@ class ContainersController < ApplicationController
         creation_args = {}
         creation_args["ExposedPorts"] = {"#{form_params["local_port"]}/tcp" => ""}
         creation_args["HostConfig"] = {"PortBindings" => {"#{form_params["local_port"]}/tcp" => [{"HostPort" => "#{form_params["host_port"]}"}]}}
-        # creation_args["Cmd"] = form_params["command"].split(" ")
-        creation_args["Image"] = "pier96/gui:latest" #image.image 
+        creation_args["Cmd"] = form_params["command"].split(" ")
+        creation_args["Image"] = "#{image.repo}/#{image.image}" 
         # creation_args["HostName"] = form_params["name"] 
         c = Docker::Container.create(creation_args)
 
@@ -37,6 +37,12 @@ class ContainersController < ApplicationController
     def show
         @container = Container.find(params[:id])
         @server = Server.find(@container.server_id)
+    end
+
+    def refresh
+      ContainerStatusWorker.delay.perform
+      flash[:notice] = "Containers' status is currently being checked, this could take a while."
+      redirect_to action: :index
     end
 
     private
