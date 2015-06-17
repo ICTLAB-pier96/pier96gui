@@ -61,6 +61,8 @@ class ServersStatusWorker
               server.total_images = status[:Images]
               server.save
           end
+        rescue Errno::ETIMEDOUT 
+            puts "Errno::ETIMEDOUT: Connection timeout."
         rescue Errno::ECONNREFUSED
             puts "Errno::ECONNREFUSED: Connection refused."
             server.daemon_status = false
@@ -97,7 +99,7 @@ class ServersStatusWorker
       Thread.new{
         servers.each do |server|
           begin
-            Net::SSH.start( server.host, server.user, :password => server.password) do|ssh|
+            Net::SSH.start( server.host, server.user, :password => server.password, :timeout => 5) do|ssh|
               status = ssh.exec!("echo true")
               ram_usage = ssh.exec!("free | grep Mem | awk '{print $3/($2+$7)*100.0}'")
               disk_space = ssh.exec!("df | tr -s ' ' $'\t' | grep /dev/ | cut -f4")
@@ -118,6 +120,10 @@ class ServersStatusWorker
           rescue Net::SSH::AuthenticationFailed
             #  TODO: let user know that the user/pass failed to login
             puts "Net::SSH::Authenticationfailed:: Incorrect user/password combination."
+            server.status = false
+            server.save
+          rescue Errno::ETIMEDOUT
+            puts "Errno::ETIMEDOUT: Connection timeout."
             server.status = false
             server.save
           rescue Errno::ECONNREFUSED
