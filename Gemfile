@@ -12,6 +12,7 @@ gem 'json', '>= 1.8.2'
 gem 'whenever', :require => false
 gem 'responders', '~> 2.0'
 gem 'delayed_job_active_record'
+gem 'daemons'
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 5.0'
 # Use Uglifier as compressor for JavaScript assets
