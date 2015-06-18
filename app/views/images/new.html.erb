@@ -38,7 +38,8 @@ $( document ).ready(function() {
       </ul>
     </div>
   <% end %>
-  <select class="typeselect">
+  <p id="notice"><strong><%= notice %></strong></p>
+  <select name="image[typeselect]" class="typeselect">
   	<option value="createexisting">Add existing image from repository</option>
   	<option value="createfromfile">Create and add image from Dockerfile</option>
   </select>
@@ -73,6 +74,5 @@ $( document ).ready(function() {
   <p>
     <%= f.submit "Save", class: "blue darken-3 btn" %> 
   </p>
- 
-<% end %>
 
+<% end %>

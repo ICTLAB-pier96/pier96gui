@@ -13,3 +13,26 @@
   <%= @image.created %>
 </p>
 
+<p>
+  <strong>Status:</strong>
+  <% 
+  status = @image.status
+  case status
+  when -2
+    concat "Existing image added from repository"
+  when -1
+  	concat "Build started"
+  when 0
+  	concat "Build in progress"
+  when 1
+  	concat "Build failed"
+  when 2
+  	concat "Build succeeded"
+  when 3
+  	concat "Authentication failed"
+  else
+  	concat "Unknown status"
+  end
+  %>
+</p>
+

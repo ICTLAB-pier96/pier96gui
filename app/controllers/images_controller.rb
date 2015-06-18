@@ -1,15 +1,28 @@
 class ImagesController < ApplicationController
+  respond_to :html, :json
   require 'docker'
 
   # Begin methods for actions, these have to be the first methods in the controller class and need to be public
   public
     def index
       @images = Image.all
+      respond_to do |format|
+        format.html
+        format.json{
+          render :json => @images.to_json(:only => [ :id, :repo, :image, :created ])
+        }
+      end
     end
 
   public
     def show
       @image = Image.find(params[:id])
+      respond_to do |format|
+        format.html
+        format.json{
+          render :json => @image.to_json(:only => [ :id, :repo, :image, :created, :status ])
+        }
+      end
     end
 
   public
@@ -18,47 +31,32 @@ class ImagesController < ApplicationController
     end
 
   public
-    def edit
-      @image = Image.find(params[:id])
-    end
-
-  public
     def create
       @image = Image.new(define_image_parameters)
-      
-      
 
-      if @image.save
-        if params[:image][:file]
-          upload_parameters = params[:image][:file]
-          repo = params[:image][:repo]
-          image_name = params[:image][:image]
-          file_name = upload_parameters.original_filename
-          repo_username = params[:image][:repo_username]
-          repo_password = params[:image][:repo_password]
-          repo_email = params[:image][:repo_email]
+      typeselect = params[:image][:typeselect]
+      repo = params[:image][:repo]
+      image_name = params[:image][:image]
 
-          @image.filename = file_name
-          authenticate_status = prepare_docker(repo_username, repo_password, repo_email)
-          if authenticate_status
-            puts "authentication success"
-            File.open(Rails.root.join('public', 'images', file_name), 'wb') do |file|
-              file.write(upload_parameters.read)
-            end
-            build_image_from_file(repo, image_name, file_name)
-          else
-            puts "authentication failed"
-          end
-        end
+
+      if typeselect == "createexisting"
+        result = @image.add_from_hub(repo, image_name)
+      elsif typeselect == "createfromfile"
+        upload_parameters = params[:image][:file]
+        file_name = upload_parameters.original_filename
+        repo_credentials = {"username" => params[:image][:repo_username], "password" => params[:image][:repo_password], "email" => params[:image][:repo_email]}
+        result = @image.add_from_file(repo, repo_credentials, image_name, file_name, upload_parameters)
+      else
+        result = {"status" => false, "notice" => "Incorrect parameter for type select"}
+      end
+      if result["status"]
         redirect_to @image
       else
+        if result["notice"] != ""
+          flash.now[:notice] = "An error occurred:" + result["notice"]
+        end
         render 'new'
       end
-    end
-
-  public
-    def createexisting
-      @image = Image.find(params[:id])
     end
 
   public
@@ -75,8 +73,13 @@ class ImagesController < ApplicationController
   public
     def destroy
       @image = Image.find(params[:id])
-      @image.destroy
-   
+      destroy_status = @image.destroy
+      respond_to do |format|
+        format.html
+        format.json{
+          render :json => destroy_status
+        }
+      end
       redirect_to action: :index
     end
 
@@ -87,35 +90,7 @@ class ImagesController < ApplicationController
       params.require(:image).permit(:repo, :image, :created)
     end
 
-  private
-    def build_image_from_file(repo, image_name, file_name)
-      image_exists = Docker::Image.exist?(file_name)
-      dockerfile_dir = Rails.root.join('public', 'images')
-      contents = File.open(dockerfile_dir + file_name, 'rb') { |file| file.read }
-      if !image_exists
-        Dir.chdir(dockerfile_dir)
-        image = Docker::Image.build(contents)
-        image.tag("repo" => repo + "/" + image_name, "force" => true)
-        image.push
-      end
-    end
 
-  private
-    def prepare_docker(repo_username, repo_password, repo_email)
-      Excon.defaults[:write_timeout] = 6000
-      Excon.defaults[:read_timeout] = 6000
 
-      docker_file_directory = Rails.root.join('public', 'images')
-      host = '188.166.29.77';
-      Docker.url = "tcp://"+host+":5555/"
-      puts repo_username
-      puts repo_password
-      puts repo_email
-      begin
-        return Docker.authenticate!('username' => repo_username, 'password' => repo_password, 'email' => repo_email)
-      rescue
-        return false
-      end
-    end
 end
 
