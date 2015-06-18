@@ -19,6 +19,12 @@ Rails.application.routes.draw do
 
   get '/containers/refresh', to: 'containers#refresh', as: :containers_refresh
   get '/containers/:id/destroy', to: 'containers#destroy', as: :container_destroy
+  get '/containers/:id/stop', to: 'containers#stop', as: :container_stop
+  get '/containers/:id/pause', to: 'containers#pause', as: :container_pause
+  get '/containers/:id/unpause', to: 'containers#unpause', as: :container_unpause
+  get '/containers/:id/restart', to: 'containers#restart', as: :container_restart
+  get '/containers/:id/start', to: 'containers#start', as: :container_start
+
 
   resources :images, :containers, :servers
   # Example of regular route:
