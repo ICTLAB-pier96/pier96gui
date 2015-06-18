@@ -6,7 +6,6 @@ class SettingsController < ApplicationController
   def index
     @settings = Settings.new
     @config_file = @settings.formatted_config_file
-    puts "index:"+@config_file
     @servers_nginx_containers = @settings.servers_nginx_containers
     @servers_gui_containers = @settings.servers_gui_containers
   end
