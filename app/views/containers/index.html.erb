@@ -18,9 +18,9 @@
    <% state = parse_state(c) %>
     <tr>
       <td><%= link_to "#{c.name}", container_path(:id => c.id) %></td>
+      <td><%= c.image %></td>
       <td><%= c.command %>
       <td><%= server.name %></td>
-      <td><%= c.image %></td>
       <td><%= c.local_port %> : <%= c.host_port %></td>
       <td>
         <% if state["Running"] %>

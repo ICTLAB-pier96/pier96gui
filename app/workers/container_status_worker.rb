@@ -23,4 +23,13 @@ class ContainerStatusWorker
 			end
 		end
 	end
+
+	def self.update_single_container(id, s)
+		require 'docker'	
+		if s.daemon_status
+			Docker.url = "tcp://"+ s.host + ":5555"
+			result = Docker::Container.get(id)
+			Container.parse_container(result.json, s)
+		end
+	end
 end
