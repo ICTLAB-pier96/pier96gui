@@ -26,6 +26,10 @@ Rails.application.routes.draw do
   get '/containers/:id/start', to: 'containers#start', as: :container_start
 
 
+
+  get '/settings', to: 'settings#index', as: :settings
+
+  get '/settings/nginx_update', to: 'settings#update', as: :settings_fix_upstream
   resources :images, :containers, :servers
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'

@@ -1,0 +1,22 @@
+<h1 class="blue-text text-darken-3">Settings</h1>
+
+
+<table class="striped">
+  <tr>
+    <th>Application instances:</th>
+  </tr>
+  
+  <% @servers_gui_containers.each do |s, containers| %>
+    <% containers.each do |c| %>
+      <tr>
+        <td>Pier96/gui <%= s.host %> / <%= c %></td>
+      </tr>
+    <% end %>
+  <% end %>
+</table>
+
+
+<div class="divider"></div>
+<h2 class="blue-text text-darken-3">Nginx config file:</h1>
+<div class="black white-text container"><%= raw @config_file %></div>
+<%= link_to 'Fix upstream', settings_fix_upstream_path, class: "btn blue darken-4" %> 
