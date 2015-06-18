@@ -9,7 +9,7 @@
   <% @servers_gui_containers.each do |s, containers| %>
     <% containers.each do |c| %>
       <tr>
-        <td>Pier96/gui <%= s.host %> / <%= c %></td>
+        <td>Pier96/gui <%= s.host %>:<%= Container.find(c).host_port %> / <%= c %></td>
       </tr>
     <% end %>
   <% end %>
