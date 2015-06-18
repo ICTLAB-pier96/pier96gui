@@ -5,11 +5,17 @@ module ContainersHelper
 	end
 
   def images_select_collect
-      images = Image.all.collect {|i| [ i.base_image, i.id ] }
+      images = Image.all.collect {|i| [ i.image, i.id ] }
   end
 
   def get_server(id)
   	server = Server.find(id)
   end
   
+  def parse_state(container)
+  	puts container.state
+  		state = eval(container.state)
+  	rescue
+  end
+
 end

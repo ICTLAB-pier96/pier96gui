@@ -7,9 +7,9 @@ Rails.application.routes.draw do
   # You can have the root of your site routed with "root"
   root 'dashboard#index'
 
-  resources :images, :containers, :servers
+  
 
-  get '/refresh', to: 'servers#refresh', as: :servers_refresh
+  get '/servers/refresh', to: 'servers#refresh', as: :servers_refresh
   get '/servers/:id/setup', to: 'servers#setup', as: :server_setup
   get '/servers/:id/destroy', to: 'servers#destroy', as: :server_destroy
   post '/servers/new', to: 'servers#create'
@@ -17,11 +17,14 @@ Rails.application.routes.draw do
   post '/images/:id/upload', :to => 'images#upload', as: :image_upload
   get '/images/:id/destroy', to: 'images#destroy', as: :image_destroy
 
+  get '/containers/refresh', to: 'containers#refresh', as: :containers_refresh
   get '/containers/:id/destroy', to: 'containers#destroy', as: :container_destroy
+
 
   get '/settings', to: 'settings#index', as: :settings
 
   get '/settings/nginx_update', to: 'settings#update', as: :settings_fix_upstream
+  resources :images, :containers, :servers
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
 
