@@ -1,3 +1,4 @@
+<% state = parse_state(@container) %>
 <p>
   <strong>Name:</strong>
   <%= @container.name %>
@@ -16,5 +17,15 @@
   <%= @container.host_port %>
 </p>
 
- <%= link_to "Remove",container_destroy_path(id: @container.id), class: "blue darken-3 btn" %>
+<% if state["Paused"] == true %>
+	<%= link_to "Unpause",container_unpause_path(id: @container.id), class: "blue darken-3 btn" %>
+<% else %>
+	<%= link_to "Pause",container_pause_path(id: @container.id), class: "blue darken-3 btn" %>
+<% end %>
+<%= link_to "Start",container_start_path(id: @container.id), class: "blue darken-3 btn" %>
+<%= link_to "Restart",container_restart_path(id: @container.id), class: "blue darken-3 btn" %>
+<%= link_to "Stop",container_stop_path(id: @container.id), class: "blue darken-3 btn" %>
+<%= link_to "Remove",container_destroy_path(id: @container.id), class: "blue darken-3 btn" %>
+
+
 

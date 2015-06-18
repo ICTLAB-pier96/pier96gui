@@ -16,20 +16,57 @@ class Container < ActiveRecord::Base
 		super
 	end
 
+	def stop
+		require 'docker'
+		server = Server.find(self.server_id)
+		Docker.url = "tcp://#{server.host}:5555"
+		container = Docker::Container.get(self.id)
+		container.kill
+		Container.update_single_container(self.id, server)
+	end
+
+	def pause
+		require 'docker'
+		server = Server.find(self.server_id)
+		Docker.url = "tcp://#{server.host}:5555"
+		container = Docker::Container.get(self.id)
+		container.pause
+		Container.update_single_container(self.id, server)
+	end
+
+	def unpause
+		require 'docker'
+		server = Server.find(self.server_id)
+		Docker.url = "tcp://#{server.host}:5555"
+		container = Docker::Container.get(self.id)
+		container.unpause
+		Container.update_single_container(self.id, server)
+	end
+
+	def restart
+		server = Server.find(self.server_id)
+		Docker.url = "tcp://#{server.host}:5555"
+		container = Docker::Container.get(self.id)
+		container.restart
+		Container.update_single_container(self.id, server)
+	end
+
+	def start
+		server = Server.find(self.server_id)
+		Docker.url = "tcp://#{server.host}:5555"
+		container = Docker::Container.get(self.id)
+		container.start
+		Container.update_single_container(self.id, server)
+	end
+
 	def self.update_all_containers
-		ContainerStatusWorker.perform
+		ContainerStatusWorker.delay.update_all_containers
 	end
 
 	##
 	#updates or creates(db entry) for a single container 
 	def self.update_single_container(id, s)
-		require 'docker'	
-		if s.daemon_status
-			Docker.url = "tcp://"+ s.host + ":5555"
-			result = Docker::Container.get(id)
-			puts result.json
-			Container.parse_container(result.json, s)
-		end
+		ContainerStatusWorker.delay.update_single_container(id, s)
 	end
 
 	##
