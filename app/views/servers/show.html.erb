@@ -34,6 +34,14 @@
   <%= @server.ram_usage %>%
 </p>
 <p>
+  <strong>Available Diskspace</strong>
+  <%= @server.storage %>
+</p>
+<p>
+  <strong>Operating System</strong>
+  <%= @server.os %>
+</p>
+<p>
   <strong>Containers:</strong>
   <%= @server.total_containers %>
 </p>

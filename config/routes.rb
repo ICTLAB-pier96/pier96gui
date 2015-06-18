@@ -19,6 +19,9 @@ Rails.application.routes.draw do
 
   get '/containers/:id/destroy', to: 'containers#destroy', as: :container_destroy
 
+  get '/settings', to: 'settings#index', as: :settings
+
+  get '/settings/nginx_update', to: 'settings#update', as: :settings_fix_upstream
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
 

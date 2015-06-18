@@ -45,7 +45,7 @@ class ServersController < ApplicationController
   def setup
     ServerSetupWorker.delay.perform(params[:id])
     flash[:notice] = "Setup is running, this could take a while."
-    redirect_to action: :index
+    redirect_to action: :show
   end
 
   def show
