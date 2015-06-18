@@ -1,3 +1,4 @@
+# @author = Patrick
 # ServerStatusWorker is a process that should run in the background, it is used to check the status of the server and daemon
 class ServersStatusWorker
 
@@ -17,6 +18,7 @@ class ServersStatusWorker
 # * *Raises* :
 #   - Nothing
   def self.perform
+    puts "test"
     servers = Server.all
     get_daemon_status(servers)
     get_server_status(servers)
@@ -49,28 +51,27 @@ class ServersStatusWorker
               request1 = Net::HTTP::Get.new(url2.request_uri)
               @response1 = connection.request(request1)
               status =  JSON.parse(@response1.body, :symbolize_names => true)
-              server.status = true
-              server.daemon_status = true
               helper = Object.new.extend(ActionView::Helpers::NumberHelper) 
-              server.storage = helper.number_to_human_size(status[:MemTotal])
-              server.ram_usage = status[:ram_usage]
-              server.os = status[:OperatingSystem]
-              server.total_containers = status[:Containers]
-              server.total_images = status[:Images]
-              server.save
+              server.update_attributes(
+                :status => true,
+                :daemon_status => true,
+                :storage => helper.number_to_human_size(status[:MemTotal]),
+                :ram_usage => status[:ram_usage],
+                :os => status[:OperatingSystem], 
+                :total_containers => status[:Containers],
+                :total_images => status[:Images])
           end
+        rescue Errno::ETIMEDOUT 
+            puts "Errno::ETIMEDOUT: Connection timeout."
         rescue Errno::ECONNREFUSED
             puts "Errno::ECONNREFUSED: Connection refused."
-            server.daemon_status = false
-            server.save
+            server.update(:daemon_status => false)
         rescue Timeout::Error
             puts "Timeout::Error: Can't connect to server."
-            server.daemon_status = false
-            server.save
+            server.update(:daemon_status => false)
         rescue SocketError
             puts "SocketError: Something unexpected happened."
-            server.daemon_status = false
-            server.save
+            server.update(:daemon_status => false)
         end
 
       end
@@ -95,37 +96,34 @@ class ServersStatusWorker
       Thread.new{
         servers.each do |server|
           begin
-            Net::SSH.start( server.host, server.user, :password => server.password) do|ssh|
+            Net::SSH.start( server.host, server.user, :password => server.password, :timeout => 5) do|ssh|
               status = ssh.exec!("echo true")
               ram_usage = ssh.exec!("free | grep Mem | awk '{print $3/($2+$7)*100.0}'")
               disk_space = ssh.exec!("df | tr -s ' ' $'\t' | grep /dev/ | cut -f4")
+              
+              server_load = ServerLoad.new(:server_id => server.id, :ram_usage => ram_usage.to_i).save
               helper = Object.new.extend(ActionView::Helpers::NumberHelper) 
-              server.ram_usage = ram_usage.to_i.round
-              server.disk_space = helper.number_to_human_size((disk_space.to_i*1024))
-              server_load = ServerLoad.new
-              server_load.server_id = server.id 
-              server_load.ram_usage = ram_usage.to_i
-              server_load.save
-              server.status = (status === "true\n")
-              server.save
+              server.update_attributes(
+                :ram_usage => ram_usage.to_i.round,
+                :disk_space => helper.number_to_human_size((disk_space.to_i*1024)),
+                :status => (status === "true\n"))
             end
           rescue Timeout::Error
             puts "Timeout::Error: Can't connect to server."
-            server.status = false
-            server.save
+            server.update_attributes(:status => false)
           rescue Net::SSH::AuthenticationFailed
             #  TODO: let user know that the user/pass failed to login
             puts "Net::SSH::Authenticationfailed:: Incorrect user/password combination."
-            server.status = false
-            server.save
+            server.update_attributes(:status => false)
+          rescue Errno::ETIMEDOUT
+            puts "Errno::ETIMEDOUT: Connection timeout."
+            server.update_attributes(:status => false)
           rescue Errno::ECONNREFUSED
              puts "Errno::ECONNREFUSED: Server does open the connection."
-            server.status = false
-            server.save
+             server.update_attributes(:status => false)
           rescue SocketError
             puts "SocketError: Something unexpected happened."
-            server.status = false
-            server.save
+            server.update_attributes(:status => false)
           end
         end
       }.join

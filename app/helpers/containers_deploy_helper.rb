@@ -11,7 +11,8 @@ module ContainersDeployHelper
             {:dir => Rails.root.join('public', 'images', dir), 
             :image => "#{dir}",
             :host => host,
-            :c_args => {"ExposedPorts" => { "#{localport}/tcp" => {} }, "PortBindings" => { "#{localport}/tcp" =>[{ "HostPort" => "#{hostport}" }] }}})
+            :c_args => {"ExposedPorts" => { "#{localport}/tcp" => {} }, 
+                        "PortBindings" => { "#{localport}/tcp" => [{ "HostPort" => "#{hostport}" }] }}})
     end
 
     def self.run(args)
@@ -43,6 +44,7 @@ module ContainersDeployHelper
             customargs["Image"] = image_name
             container = Docker::Container.create(customargs)
             container.start
+            container
         rescue => error
             puts error.message
         end

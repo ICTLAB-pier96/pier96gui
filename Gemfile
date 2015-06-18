@@ -1,6 +1,8 @@
 source 'https://rubygems.org'
 gem 'docker-api', :require => 'docker'
 gem 'net-ssh', '2.6.8'
+gem 'net-scp', '1.2.1'
+
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.2.0'
 # Use sqlite3 as the database for Active Record
@@ -51,4 +53,5 @@ gem 'sdoc', '~> 0.4.1', group: :doc
 
 group :development, :test do
   gem 'rspec-rails', '~> 3.0'
+  gem 'rubocop', require: false
 end

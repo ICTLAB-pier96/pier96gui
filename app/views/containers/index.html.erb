@@ -1,5 +1,6 @@
 <h1>Listing Containers</h1>
 <%= link_to 'Add container', new_container_path , class: "blue darken-3 btn"%>
+<%= link_to 'Ping containers', containers_refresh_path, class: "btn blue darken-4" %> Last check: <%= ServerLoad.last.created_at.localtime %>
 <br>
 <table class="striped">
   <tr>
@@ -14,13 +15,20 @@
 
    <% @containers.each do |c| %>
    <% server = get_server(c.server_id) %>
+   <% state = parse_state(c) %>
     <tr>
       <td><%= link_to "#{c.name}", container_path(:id => c.id) %></td>
-      <td><%= c.args %>
-      <td><%= server.name %></td>
       <td><%= c.image %></td>
+      <td><%= c.command %>
+      <td><%= server.name %></td>
       <td><%= c.local_port %> : <%= c.host_port %></td>
-      <td><%= c.state %>
+      <td>
+        <% if state["Running"] %>
+          <a class="btn green disabled white-text">Online</a>
+        <% else %>
+          <span class="btn red disabled white-text">Offline</span>
+        <% end %>
+      </td>
     </tr>
   <% end %>
 </table>

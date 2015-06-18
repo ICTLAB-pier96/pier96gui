@@ -1,0 +1,47 @@
+<h1 class="blue-text text-darken-3">Settings</h1>
+
+
+<table class="striped">
+  <strong>Application Instances:</strong>
+  <tr>
+    <th>Image</th>
+    <th>Host:Port</th>
+    <th>Container ID</th>
+  </tr>
+  
+  <% @servers_gui_containers.each do |s, containers| %>
+    <% containers.each do |c| %>
+      <tr>
+        <td><%= Container.find(c).image %>
+        <td><%= s.host %>:<%= Container.find(c).host_port %></td>
+        <td><%= c %></td>
+      </tr>
+    <% end %>
+  <% end %>
+</table>
+<br>
+<div class="divider"></div>
+<table class="striped">
+  <strong>Nginx Instances:</strong>
+  <tr>
+    <th>Image</th>
+    <th>Host:Port</th>
+    <th>Container ID</th>
+  </tr>
+  
+  <% @servers_nginx_containers.each do |s, containers| %>
+    <% containers.each do |c| %>
+      <tr>
+        <td><%= Container.find(c).image %>
+        <td><%= s.host %>:<%= Container.find(c).host_port %></td>
+        <td><%= c %></td>
+      </tr>
+    <% end %>
+  <% end %>
+</table>
+
+
+<div class="divider"></div>
+<h2 class="blue-text text-darken-3">Nginx config file:</h1>
+<div class="black white-text container"><%= raw @config_file %></div>
+<%= link_to 'Fix upstream', settings_fix_upstream_path, class: "btn blue darken-4" %> 

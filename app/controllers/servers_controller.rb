@@ -1,3 +1,4 @@
+#  @author = Patrick
 class ServersController < ApplicationController
   respond_to :html, :json
 
@@ -17,6 +18,7 @@ class ServersController < ApplicationController
     respond_to do |format|
       format.html
       format.json{
+        render :json => @servers
         image = params[:image]
         if !image.nil?
           server_ids = Container.all.where(image: image).map{|c| c.server_id}
@@ -37,12 +39,14 @@ class ServersController < ApplicationController
 
   def refresh
     ServersStatusWorker.delay.perform
+    flash[:notice] = "Servers' status is currently being checked, this could take a while."
     redirect_to action: :index
   end
 
   def setup
     ServerSetupWorker.delay.perform(params[:id])
-    redirect_to action: :index
+    flash[:notice] = "Setup is running, this could take a while."
+    redirect_to action: :show
   end
 
   def show

@@ -1,0 +1,9 @@
+<% flash.each do |name, msg| %>
+  <div class="toast-container">
+    <% if msg.is_a?(String) %>
+      <div class="toast <%= name.to_s == 'notice' ? 'green' : 'red' %>">
+        <%= content_tag :div, msg %>
+      </div>
+    <% end %>
+    </div>
+<% end %>

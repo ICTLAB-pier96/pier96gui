@@ -1,6 +1,6 @@
 <h1 class="blue-text text-darken-3">Servers <a href="/servers.json">{JSON}</a> </h1>
 <%= link_to 'Add server', new_server_path, class: "btn blue darken-4" %> 
-<%= link_to 'Ping servers', servers_refresh_path, class: "btn blue darken-4" %>
+<%= link_to 'Ping servers', servers_refresh_path, class: "btn blue darken-4" %> Last check: <%= ServerLoad.last.created_at.localtime %>
 <br>
 <table class="striped">
   <tr>
