@@ -18,7 +18,6 @@ class ServersController < ApplicationController
     respond_to do |format|
       format.html
       format.json{
-        render :json => @servers
         image = params[:image]
         if !image.nil?
           server_ids = Container.all.where(image: image).map{|c| c.server_id}
