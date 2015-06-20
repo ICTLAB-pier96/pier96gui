@@ -17,5 +17,4 @@ module ContainersHelper
   		state = eval(container.state)
   	rescue
   end
-
 end
