@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150611103401) do
+ActiveRecord::Schema.define(version: 20150618165009) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -26,7 +26,7 @@ ActiveRecord::Schema.define(version: 20150611103401) do
     t.string   "name"
     t.string   "local_port"
     t.string   "host_port"
-    t.string   "state"
+    t.text     "state"
     t.integer  "server_id"
     t.string   "ports"
     t.datetime "created_at",  null: false
@@ -38,6 +38,22 @@ ActiveRecord::Schema.define(version: 20150611103401) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "delayed_jobs", force: :cascade do |t|
+    t.integer  "priority",   default: 0, null: false
+    t.integer  "attempts",   default: 0, null: false
+    t.text     "handler",                null: false
+    t.text     "last_error"
+    t.datetime "run_at"
+    t.datetime "locked_at"
+    t.datetime "failed_at"
+    t.string   "locked_by"
+    t.string   "queue"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "delayed_jobs", ["priority", "run_at"], name: "delayed_jobs_priority", using: :btree
+
   create_table "images", force: :cascade do |t|
     t.string   "repoid"
     t.string   "repo"
@@ -46,6 +62,7 @@ ActiveRecord::Schema.define(version: 20150611103401) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string   "filename"
+    t.integer  "status"
   end
 
   create_table "server_loads", force: :cascade do |t|
