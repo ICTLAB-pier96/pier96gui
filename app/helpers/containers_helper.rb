@@ -5,7 +5,7 @@ module ContainersHelper
 	end
 
   def images_select_collect
-      images = Image.all.collect {|i| [ i.image, i.id ] }
+      images = Image.all.collect {|i| [ "#{i.repo}/#{i.image}", i.id ] }
   end
 
   def get_server(id)

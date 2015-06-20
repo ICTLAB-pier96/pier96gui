@@ -5,9 +5,9 @@
 <table class="striped">
   <tr>
     <th>Name</th>
-    <th>Arguments</th>
-    <th>Server</th>
     <th>Image</th>
+    <th>Commands</th>
+    <th>Server</th>
     <th>Ports : Host Ports</th>
     <th>Status
   </tr>
@@ -23,11 +23,16 @@
       <td><%= server.name %></td>
       <td><%= c.local_port %> : <%= c.host_port %></td>
       <td>
-        <% if state["Running"] == true %>
-          <a class="btn green disabled white-text">Online</a>
+        <% if state["Paused"] == true %>
+          <span class="btn yellow disabled white-text">Paused</span>
+        <% elsif state["Running"] == true %>
+          <span class="btn green disabled white-text">Online</span>
+        <% elsif state["Restarting"] == true %>
+          <span class="btn green disabled white-text">Restarting</span>
         <% else %>
           <span class="btn red disabled white-text">Offline</span>
         <% end %>
+
       </td>
     </tr>
   <% end %>

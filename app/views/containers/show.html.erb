@@ -35,7 +35,11 @@
 			        	  <strong><%= state[0] %></strong>
 			        	</div>
 			        	<div class="col s9">
-			        	  <%= state[0] == "StartedAt" ? (state[1].to_datetime.strftime("%b %d, %Y")) : (state[1]) %>
+			        		<% if state[0] == "StartedAt" or state[0] == "FinishedAt" %>
+			        	  	<%= state[1].to_datetime.strftime("%b %d, %Y") %>
+			        	  <% else %>
+			        	   	<%= state[1] %>
+			        	  <% end %>
 			        	</div>
 		        	</div>
 		        <% end %>
