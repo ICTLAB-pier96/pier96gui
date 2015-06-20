@@ -17,31 +17,31 @@ class Container < ActiveRecord::Base
 	def stop
 		container = find_self_on_server
 		container.kill
-		Container.update_single_container(self.id, server)
+		Container.update_single_container(self.id,  Server.find(self.server_id))
 	end
 
 	def pause
 		container = find_self_on_server
 		container.pause
-		Container.update_single_container(self.id, server)
+		Container.update_single_container(self.id,  Server.find(self.server_id))
 	end
 
 	def unpause
 		container = find_self_on_server
 		container.unpause
-		Container.update_single_container(self.id, server)
+		Container.update_single_container(self.id,  Server.find(self.server_id))
 	end
 
 	def restart
 		container = find_self_on_server
 		container.restart
-		Container.update_single_container(self.id, server)
+		Container.update_single_container(self.id,  Server.find(self.server_id))
 	end
 
 	def start
 		container = find_self_on_server
 		container.start
-		Container.update_single_container(self.id, server)
+		Container.update_single_container(self.id,  Server.find(self.server_id))
 	end
 
 	def find_self_on_server
