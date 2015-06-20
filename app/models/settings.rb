@@ -9,7 +9,7 @@ class Settings
 
   attr_accessor :config_file, :formatted_config_file, :servers_nginx_containers, :servers_gui_containers
   def get_containers(name)
-    Container.all.where(:image => name)
+    Container.all.where("state ilike '%\"Running\"=>true%'").where(:image => name)
   end
 
   def get_servers(container_list)

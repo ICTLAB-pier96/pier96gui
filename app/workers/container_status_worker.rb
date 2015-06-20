@@ -9,7 +9,12 @@ class ContainerStatusWorker
 	##
 	#Class methods 
 	def self.update_all_containers
-		require 'docker'	
+		require 'docker'
+        Container.all.map{|c|
+            state = eval c.state
+            state["Running"] = false
+            c.update_attribute(:state, state)
+        }
 		servers = Server.all
 		servers.each do |s| 
 			if s.daemon_status
