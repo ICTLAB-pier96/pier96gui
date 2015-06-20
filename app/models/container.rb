@@ -1,14 +1,12 @@
 class Container < ActiveRecord::Base
+	require 'docker'
 	##
 	#Instance methods
 	##
 	#Overrides ActiveRecord's destroy method to also destroy the serverside container
 	def destroy
-		require 'docker'	
 		begin
-			server = Server.find(self.server_id)
-			Docker.url = "tcp://#{server.host}:5555"
-			container = Docker::Container.get(self.id)
+			container = find_self_on_server
 			container.delete(:force => true)
 		rescue 
 		    puts "container not found, deleting db entry"
@@ -17,50 +15,44 @@ class Container < ActiveRecord::Base
 	end
 
 	def stop
-		require 'docker'
-		server = Server.find(self.server_id)
-		Docker.url = "tcp://#{server.host}:5555"
-		container = Docker::Container.get(self.id)
+		container = find_self_on_server
 		container.kill
 		Container.update_single_container(self.id, server)
 	end
 
 	def pause
-		require 'docker'
-		server = Server.find(self.server_id)
-		Docker.url = "tcp://#{server.host}:5555"
-		container = Docker::Container.get(self.id)
+		container = find_self_on_server
 		container.pause
 		Container.update_single_container(self.id, server)
 	end
 
 	def unpause
-		require 'docker'
-		server = Server.find(self.server_id)
-		Docker.url = "tcp://#{server.host}:5555"
-		container = Docker::Container.get(self.id)
+		container = find_self_on_server
 		container.unpause
 		Container.update_single_container(self.id, server)
 	end
 
 	def restart
-		server = Server.find(self.server_id)
-		Docker.url = "tcp://#{server.host}:5555"
-		container = Docker::Container.get(self.id)
+		container = find_self_on_server
 		container.restart
 		Container.update_single_container(self.id, server)
 	end
 
 	def start
-		server = Server.find(self.server_id)
-		Docker.url = "tcp://#{server.host}:5555"
-		container = Docker::Container.get(self.id)
+		container = find_self_on_server
 		container.start
 		Container.update_single_container(self.id, server)
 	end
 
+	def find_self_on_server
+		server = Server.find(self.server_id)
+		Docker.url = "tcp://#{server.host}:5555"
+		container = Docker::Container.get(self.id)
+		container
+	end
+
 	def self.update_all_containers
-		ContainerStatusWorker.delay.update_all_containers
+		ContainerStatusWorker.update_all_containers
 	end
 
 	##
@@ -99,7 +91,6 @@ class Container < ActiveRecord::Base
 		params["Args"].each do |str|
 			parsedparams[:args] += str + " "
 		end		
-
 
 		id = parsedparams[:id]
 		@container
