@@ -1,8 +1,6 @@
 class ContainerStatusWorker
 	require 'net/http'
 	require 'json'
-	require 'aes'
-	require 'action_view'
 
 	def self.perform
 		update_all_containers
