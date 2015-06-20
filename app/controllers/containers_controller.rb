@@ -41,7 +41,7 @@
     respond_to do |format|
       format.html
       format.json{
-        render :json => @containers.as_json(:except => [:state])
+        render :json => @container.as_json(:except => [:state])
       }
     end
   end
