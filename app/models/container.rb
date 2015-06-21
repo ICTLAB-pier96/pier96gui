@@ -58,7 +58,7 @@ class Container < ActiveRecord::Base
 	end
 
 	def self.update_all_containers
-		ContainerStatusWorker.update_all_containers
+		ContainerStatusWorker.delay.update_all_containers
 	end
 
 	##
