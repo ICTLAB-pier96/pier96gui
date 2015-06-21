@@ -24,7 +24,7 @@ class ImagesController < ApplicationController
       respond_to do |format|
         format.html
         format.json{
-          render :json => @images.to_json(:only => [ :id, :repo, :image, :created ])
+          render :json => @images.to_json(:only => [ :id, :repo, :image, :created_at ])
         }
       end
     end
@@ -43,7 +43,7 @@ class ImagesController < ApplicationController
       respond_to do |format|
         format.html
         format.json{
-          render :json => @image.to_json(:only => [ :id, :repo, :image, :created, :status ])
+          render :json => @image.to_json(:only => [ :id, :repo, :image, :created_at, :status ])
         }
       end
     end
@@ -157,7 +157,7 @@ class ImagesController < ApplicationController
   #   - Nothing 
   private
     def define_image_parameters
-      params.require(:image).permit(:repo, :image, :created)
+      params.require(:image).permit(:repo, :image)
     end
 
 
