@@ -1,8 +1,6 @@
 class ContainerStatusWorker
 	require 'net/http'
 	require 'json'
-	require 'aes'
-	require 'action_view'
 
 	def self.perform
 		update_all_containers
@@ -11,7 +9,12 @@ class ContainerStatusWorker
 	##
 	#Class methods 
 	def self.update_all_containers
-		require 'docker'	
+		require 'docker'
+        Container.all.map{|c|
+            state = eval c.state
+            state["Running"] = false
+            c.update_attribute(:state, state)
+        }
 		servers = Server.all
 		servers.each do |s| 
 			if s.daemon_status
@@ -23,13 +26,12 @@ class ContainerStatusWorker
 			end
 		end
 	end
-
-	def self.update_single_container(id, s)
-		require 'docker'	
-		if s.daemon_status
-			Docker.url = "tcp://"+ s.host + ":5555"
-			result = Docker::Container.get(id)
-			Container.parse_container(result.json, s)
-		end
-	end
+  def self.update_single_container(id, s)
+    require 'docker'  
+    if s.daemon_status
+      Docker.url = "tcp://"+ s.host + ":5555"
+      result = Docker::Container.get(id)
+      Container.parse_container(result.json, s)
+    end
+  end
 end

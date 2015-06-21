@@ -1,17 +1,19 @@
 source 'https://rubygems.org'
 gem 'docker-api', :require => 'docker'
 gem 'net-ssh', '2.6.8'
+gem 'net-scp', '1.2.1'
+
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.2.0'
 # Use sqlite3 as the database for Active Record
 # gem 'sqlite3'
 gem 'pg'
-gem 'aes'
 
 gem 'json', '>= 1.8.2'
 gem 'whenever', :require => false
 gem 'responders', '~> 2.0'
 gem 'delayed_job_active_record'
+gem 'daemons'
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 5.0'
 # Use Uglifier as compressor for JavaScript assets
@@ -52,4 +54,5 @@ gem "nested_form"
 
 group :development, :test do
   gem 'rspec-rails', '~> 3.0'
+  gem 'rubocop', require: false
 end

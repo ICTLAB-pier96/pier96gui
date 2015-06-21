@@ -37,7 +37,7 @@ class ServersController < ApplicationController
   end
 
   def refresh
-    ServersStatusWorker.delay.perform
+    ServersStatusWorker.perform
     flash[:notice] = "Servers' status is currently being checked, this could take a while."
     redirect_to action: :index
   end

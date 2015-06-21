@@ -6,7 +6,7 @@ class DashboardController < ApplicationController
   end
 
 
-  private
+  
 # This method uses ServerLoad logs to calculate the average ram_usage per server per hour.
 # It formats the output as expected by highcharts.
 #
@@ -16,19 +16,19 @@ class DashboardController < ApplicationController
 #   - @series -> hashmap inside an array, highcharts expects the keys :name->(STRING) and :data->(ARRAY)
 # * *Raises* :
 #   - Nothing
-    def get_series(current_hour)
-      @series = []
-      empty_hash =  {}
-      Array (00..23).each{|i| empty_hash[i] = [ServerLoad.new({:ram_usage => 0})]}
-      Server.all.each do |s|
-        logs_per_hour = empty_hash.merge!(ServerLoad.where(server_id: s.id, updated_at: (Time.now - 24.hours)..Time.now).group_by(&:hour))
-        data = logs_per_hour.map{|k,array| (array.map{|l| l.ram_usage}.reduce(:+).to_f/ array.size).round(2)}
-        data = data[current_hour+1..data.size]+ data[0..current_hour]
-        puts data.inspect
-        @series.push({name: s.name, data: data})
-      end
-      return @series
+  def get_series(current_hour)
+    @series = []
+    empty_hash =  {}
+    Array (00..23).each{|i| empty_hash[i] = [ServerLoad.new({:ram_usage => 0})]}
+    Server.all.each do |s|
+      logs_per_hour = empty_hash.merge!(ServerLoad.where(server_id: s.id, updated_at: (Time.now - 24.hours)..Time.now).group_by(&:hour))
+      data = logs_per_hour.map{|k,array| (array.map{|l| l.ram_usage}.reduce(:+).to_f/ array.size).round(2)}
+      data = data[current_hour+1..data.size]+ data[0..current_hour]
+      puts data.inspect
+      @series.push({name: s.name, data: data})
     end
+    @series
+  end
 
 # This method created an array 0..23 and reorder this based on the current_hour,
 # if the current time is 12:01 the output will look like this:
@@ -40,10 +40,10 @@ class DashboardController < ApplicationController
 #   - @categories -> an array with axis labels, it contains the previous hours 
 # * *Raises* :
 #   - Nothing
-    def get_categories(current_hour)
-      @categories = []
-      Array (00..23).each{|i| @categories.push("#{i}:00")}
-      @categories = @categories.split("#{current_hour}:00").insert(0, "#{current_hour}:00").reverse.flatten
-      return @categories
-    end
+  def get_categories(current_hour)
+    @categories = []
+    Array (00..23).each{|i| @categories.push("#{i}:00")}
+    @categories = @categories.split("#{current_hour}:00").insert(0, "#{current_hour}:00").reverse.flatten
+    @categories
+  end
 end

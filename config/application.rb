@@ -8,6 +8,7 @@ Bundler.require(*Rails.groups)
 
 module Pier96
   class Application < Rails::Application
+
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.
@@ -23,7 +24,9 @@ module Pier96
     # Do not swallow errors in after_commit/after_rollback callbacks.
     config.active_record.raise_in_transactional_callbacks = true
     config.active_job.queue_adapter = :delayed_job
-
+    config.web_console.whitelisted_ips = '10.0.2.2'
+    config.autoload_paths += %W(#{config.root}/lib)
+    
     config.before_configuration do
       env_file = File.join(Rails.root, 'config', 'environment_variables.yml')
       YAML.load(File.open(env_file)).each do |key, value|
