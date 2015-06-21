@@ -1,71 +1,90 @@
 <% state = parse_state(@container) %>
 <div class="container">
-	<div class="row">
-		<h1 class="blue-text text-darken-3"> <%= @container.name %> </h1>
-		<div class="col s8">
-			<p>
-			  <strong>Image:</strong>
-			  <%= @container.image %>
-			</p>
-			<p>
-			  <strong>Commands:</strong>
-			  <%= @container.command %>
-			</p>
-			<p>
-			  <strong>Server:</strong>
-			  <%= @server.name %>
-			</p>
-			<p>
-			  <strong>Local Port:</strong>
-			  <%= @container.local_port %>
-			</p>
-			<p>
-			  <strong>Host Port:</strong>
-			  <%= @container.host_port %>
-			</p>
-		</div>
-		<div class="col s4">
-	    <div class="card blue lighten-2">
-	      <div class="card-content white-text">
-	        <span class="card-title">Container state</span>
-	        <p>
-		        <% state.each do |state| %>
-		        	<div class="row">
-		        	  <div class="col s3">
-			        	  <strong><%= state[0] %></strong>
-			        	</div>
-			        	<div class="col s9">
-			        		<% if state[0] == "StartedAt" or state[0] == "FinishedAt" %>
-			        	  	<%= state[1].to_datetime.strftime("%b %d, %Y") %>
-			        	  <% else %>
-			        	   	<%= state[1] %>
-			        	  <% end %>
-			        	</div>
-		        	</div>
-		        <% end %>
-	        </p>		
-	      </div>
-	    </div>
-		</div>
-	</div>
+  <div class="row">
+    <h1 class="blue-text text-darken-3"> <%= @container.name %> </h1>
+    <div class="col s8">
+      <p>
+        <strong>Image:</strong>
+        <%= @container.image %>
+      </p>
+      <p>
+        <strong>Commands:</strong>
+        <%= @container.command %>
+      </p>
+      <p>
+        <strong>Server:</strong>
+        <%= @server.name %>
+      </p>
+      <p>
+        <strong>Local Port:</strong>
+        <%= @container.local_port %>
+      </p>
+      <p>
+        <strong>Host Port:</strong>
+        <%= @container.host_port %>
+      </p>
+    </div>
+    <div class="col s4">
+      <div class="card blue lighten-2">
+        <div class="card-content white-text">
+          <span class="card-title">Container state</span>
+          <p>
+            <% state.each do |state| %>
+              <div class="row">
+                <div class="col s3">
+                  <strong><%= state[0] %></strong>
+                </div>
+                <div class="col s9">
+                  <% if state[0] == "StartedAt" or state[0] == "FinishedAt" %>
+                    <%= state[1].to_datetime.strftime("%b %d, %Y") %>
+                  <% else %>
+                    <%= state[1] %>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+          </p>    
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 <div class="row">
-	<div class="divider"></div>
-	<div class="section">
-	<% if state["Paused"] %>
-		<%= link_to "Unpause",container_unpause_path(id: @container.id), class: "blue darken-3 btn" %>
-	<% else %>
-		<%= link_to "Pause",container_pause_path(id: @container.id), class: "blue darken-3 btn" %>
-	<% end %>
-	<% if state["Running"] %>
-		<%= link_to "Stop",container_stop_path(id: @container.id), class: "blue darken-3 btn" %>
-	<% else %>
-		<%= link_to "Start",container_start_path(id: @container.id), class: "blue darken-3 btn" %>
-	<% end %>
-	<%= link_to "Restart",container_restart_path(id: @container.id), class: "blue darken-3 btn" %>
-	<%= link_to "Remove",container_destroy_path(id: @container.id), class: "blue darken-3 btn" %>
-	</div>
+  <div class="divider"></div>
+  <div class="section">
+  <% if state["Paused"] %>
+    <%= link_to "Unpause",container_unpause_path(id: @container.id), class: "blue darken-3 btn" %>
+  <% else %>
+    <%= link_to "Pause",container_pause_path(id: @container.id), class: "blue darken-3 btn" %>
+  <% end %>
+  <% if state["Running"] %>
+    <%= link_to "Stop",container_stop_path(id: @container.id), class: "blue darken-3 btn" %>
+  <% else %>
+    <%= link_to "Start",container_start_path(id: @container.id), class: "blue darken-3 btn" %>
+  <% end %>
+  <%= link_to "Restart",container_restart_path(id: @container.id), class: "blue darken-3 btn" %>
+  <%= link_to "Remove",container_destroy_path(id: @container.id), class: "blue darken-3 btn" %>
+  <a href="#" class="dropdown-button blue darken-3 btn",data-beloworigin="true", data-activates='migrate'>Migrate</a>
+  </div>
 </div>
 
 
 
+
+  <ul id='migrate' class='dropdown-content'>
+    <% servers_select_collect.each do |name, id| %>
+        <li><%= link_to "#{name}", container_migrate_path(id: @container.id, server_id: id)%> </li>
+    <% end %>
+  </ul>
+
+<script>
+  $('.dropdown-button').dropdown({
+      inDuration: 300,
+      outDuration: 225,
+      constrain_width: false, // Does not change width of dropdown to that of the activator
+      hover: false, // Activate on hover
+      gutter: 0, // Spacing from edge
+      belowOrigin: false // Displays dropdown below the button
+    }
+  );
+</script>
