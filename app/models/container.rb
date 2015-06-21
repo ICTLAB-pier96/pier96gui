@@ -1,4 +1,10 @@
 class Container < ActiveRecord::Base
+	
+	has_many :container_arguments
+	accepts_nested_attributes_for :container_arguments
+
+	attr_accessor :image_id
+	
 	require 'docker'
 	##
 	#Instance methods

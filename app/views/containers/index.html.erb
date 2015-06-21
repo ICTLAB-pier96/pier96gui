@@ -2,6 +2,7 @@
 <%= link_to 'Add container', new_container_path , class: "blue darken-3 btn"%>
 <%= link_to 'Ping containers', containers_refresh_path, class: "btn blue darken-4" %> Last check: <%= ServerLoad.last.created_at.localtime %>
 <br>
+
 <table class="striped">
   <tr>
     <th>Name</th>
@@ -32,7 +33,6 @@
         <% else %>
           <span class="btn red disabled white-text">Offline</span>
         <% end %>
-
       </td>
     </tr>
   <% end %>

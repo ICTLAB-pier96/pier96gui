@@ -1,40 +1,59 @@
 
+<%= javascript_include_tag :defaults, "nested_form" %>
 <%= javascript_tag "$(document).ready(function() {
       $('select').material_select();
   });"
 %>
-<%= form_for :container, url: containers_path do |f| %>
-  <p>
-    <%= f.label :name %><br>
-    <%= f.text_field :name %>
-  </p>
-  <div class="input-field col s12">
-    <%= f.label :server_id %><br>
-    <%= f.select("server_id", servers_select_collect, { include_blank: false }) %>
-  </div>
+<div class="container">
+  <%= nested_form_for @container, url: containers_path do |f| %>
+    <div class="row">
+      <div class="input-field col s4">
+        <%= f.select("server_id", servers_select_collect, { include_blank: false }) %>
+        <%= f.label :server_id %>
+      </div>
+    </div>
+    <div class="row">
+      <div class="input-field col s4">
+        <%= f.select("image_id", images_select_collect, { include_blank: false }) %>
+        <%= f.label :image_id %>
+      </div>
+    </div>
+    <div class="row">
+      <div class="input-field col s4">
+        <%= f.label :command %>
+        <%= f.text_field :command %>
+      </div>
+    </div>
+    <div class="row">
+      <div class="input-field col s4">
+        <%= f.label :local_port %>
+        <%= f.text_field :local_port %>
+      </div>
+    </div>
+    <div class="row">
+      <div class="input-field col s4">
+        <%= f.label :host_port %>
+        <%= f.text_field :host_port %>
+      </div>
+    </div>
 
-  <div class="input-field col s12">
-    <%= f.label :image_id %><br>
-    <%= f.select("image_id", images_select_collect, { include_blank: false }) %>
+    <div class="row">
+      <span>Other arguments</span>
+    </div>
+    <%= f.fields_for :container_arguments do |argument_form| %>
+      <div class="row">
+        <div class="input-field col s4">
+          <%= argument_form.label :name %>
+          <%= argument_form.text_field :name %>
+        </div>
+        <div class="input-field col s4">
+          <%= argument_form.label :value %>
+          <%= argument_form.text_field :value %>
+        </div>
+      </div>
+      <%= argument_form.link_to_remove "Remove this argument" %>
+  <% end %>
+  <%= f.link_to_add "Add argument", :container_arguments %>
   </div>
-  <p>
-    <%= f.label :command %><br>
-    <%= f.text_area :command %>
-  </p>
-  <p>
-    <%= f.label :local_port %><br>
-    <%= f.text_area :local_port %>
-  </p>
-  <p>
-    <%= f.label :host_port %><br>
-    <%= f.text_area :host_port %>
-  </p>
-  <p>
-    <%= f.label :custom_arguments %><br>
-    <%= f.text_area :custom_arguments %>
-  </p>
-
-  <p>
-    <%= f.submit "Save", class: "blue darken-3 btn" %>
-  </p>
+  <%= f.submit "Save", class: "blue darken-3 btn" %>
 <% end %>
