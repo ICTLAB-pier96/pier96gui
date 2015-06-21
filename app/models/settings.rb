@@ -1,7 +1,7 @@
 class Settings
   include ActionView::Helpers::TextHelper
   def initialize
-    @servers_nginx_containers = get_servers(get_containers("nginx"))
+    @servers_nginx_containers = get_servers(get_containers("pier96/nginx"))
     @servers_gui_containers = get_servers(get_containers("pier96/gui"))
     @config_file = read_config_file
     @formatted_config_file = format_config_file

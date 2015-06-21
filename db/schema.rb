@@ -40,11 +40,6 @@ ActiveRecord::Schema.define(version: 20150621140434) do
     t.datetime "updated_at",  null: false
   end
 
-  create_table "data_files", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "delayed_jobs", force: :cascade do |t|
     t.integer  "priority",         default: 0, null: false
     t.integer  "attempts",         default: 0, null: false
@@ -65,13 +60,12 @@ ActiveRecord::Schema.define(version: 20150621140434) do
   add_index "delayed_jobs", ["priority", "run_at"], name: "delayed_jobs_priority", using: :btree
 
   create_table "images", force: :cascade do |t|
-    t.string   "repoid"
-    t.string   "repo"
-    t.string   "image"
-    t.string   "created"
+    t.string   "title"
+    t.string   "date_added"
+    t.string   "base_image"
+    t.string   "filename"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string   "filename"
     t.integer  "status"
   end
 
@@ -89,14 +83,14 @@ ActiveRecord::Schema.define(version: 20150621140434) do
     t.string   "password"
     t.boolean  "daemon_status"
     t.boolean  "status"
+    t.string   "ram_usage"
+    t.string   "disk_space"
     t.string   "os"
     t.string   "storage"
     t.string   "total_containers"
     t.string   "total_images"
     t.datetime "created_at",       null: false
     t.datetime "updated_at",       null: false
-    t.string   "ram_usage"
-    t.string   "disk_space"
   end
 
 end
