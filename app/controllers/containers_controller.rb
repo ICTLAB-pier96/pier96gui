@@ -14,12 +14,15 @@
     creation_args["ExposedPorts"] = {"#{form_params["local_port"]}/tcp" => ""}
     creation_args["HostConfig"] = {"PortBindings" => {"#{form_params["local_port"]}/tcp" => [{"HostPort" => "#{form_params["host_port"]}"}]}}
     creation_args["Cmd"] = form_params["command"].split(" ")
+    
+    Docker::Image.create("fromImage" => "#{image.repo}/#{image.image}")
     creation_args["Image"] = "#{image.repo}/#{image.image}" 
     container_arguments_attributes = form_params["container_arguments_attributes"]
-    container_arguments_attributes = container_arguments_attributes
-    container_arguments_attributes.each do |a|
-      b = Hash(a[1])
-      creation_args["#{b["name"]}"] = "#{b["value"]}"
+    unless container_arguments_attributes.nil?
+      container_arguments_attributes.each do |a|
+        b = Hash(a[1])
+        creation_args["#{b["name"]}"] = "#{b["value"]}"
+      end
     end
 
     puts creation_args
