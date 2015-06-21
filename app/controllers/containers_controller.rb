@@ -1,6 +1,4 @@
   class ContainersController < ApplicationController
-  respond_to :html, :json
-  include ContainersDeployHelper
 
   def new
     @container = Container.new
@@ -53,7 +51,7 @@
     respond_to do |format|
       format.html
       format.json{
-        render :json => @container.as_json(:except => [:state])
+        render :json => @containers.as_json(:except => [:state])
       }
     end
   end
@@ -95,8 +93,17 @@
     redirect_to action: :index
   end
 
+  def migrate
+    server_id = params[:server_id]
+    container_id = params[:id]
+    worker = ContainerMigrateWorker.new(server_id, container_id)
+    worker.migrate_container_to_server
+    flash[:notice] = "Container' is currently being migrated, this could take a while."
+    redirect_to action: :index
+  end
+
   def refresh
-  ContainerStatusWorker.delay.perform
+  ContainerStatusWorker.perform
   flash[:notice] = "Containers' status is currently being checked, this could take a while."
   redirect_to action: :index
   end
