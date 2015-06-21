@@ -24,59 +24,12 @@ Rails.application.routes.draw do
   get '/containers/:id/unpause', to: 'containers#unpause', as: :container_unpause
   get '/containers/:id/restart', to: 'containers#restart', as: :container_restart
   get '/containers/:id/start', to: 'containers#start', as: :container_start
-
+  get '/containers/:id/migrate', to: 'containers#migrate', as: :container_migrate
 
 
   get '/settings', to: 'settings#index', as: :settings
 
   get '/settings/nginx_update', to: 'settings#update', as: :settings_fix_upstream
   resources :images, :containers, :servers
-  # Example of regular route:
-  #   get 'products/:id' => 'catalog#view'
-
-  # Example of named route that can be invoked with purchase_url(id: product.id)
-  #   get 'products/:id/purchase' => 'catalog#purchase', as: :purchase
-
-  # Example resource route (maps HTTP verbs to controller actions automatically):
-  #   resources :products
-
-  # Example resource route with options:
-  #   resources :products do
-  #     member do
-  #       get 'short'
-  #       post 'toggle'
-  #     end
-  #
-  #     collection do
-  #       get 'sold'
-  #     end
-  #   end
-
-  # Example resource route with sub-resources:
-  #   resources :products do
-  #     resources :comments, :sales
-  #     resource :seller
-  #   end
-
-  # Example resource route with more complex sub-resources:
-  #   resources :products do
-  #     resources :comments
-  #     resources :sales do
-  #       get 'recent', on: :collection
-  #     end
-  #   end
-
-  # Example resource route with concerns:
-  #   concern :toggleable do
-  #     post 'toggle'
-  #   end
-  #   resources :posts, concerns: :toggleable
-  #   resources :photos, concerns: :toggleable
-
-  # Example resource route within a namespace:
-  #   namespace :admin do
-  #     # Directs /admin/products/* to Admin::ProductsController
-  #     # (app/controllers/admin/products_controller.rb)
-  #     resources :products
-  #   end
+  
 end
