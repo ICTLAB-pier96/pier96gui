@@ -1,8 +1,23 @@
+# @author = Luuk Tersmette
+# ImagesController extends the ApplicationController class, making it a Rails Controller. It acts as the controller in the Model View Controller setup.
+# Extra methods are added for each action in the controller. These actions cover CRUD (create read update delete) and more.
+# Used by: the rails framework.
 class ImagesController < ApplicationController
   respond_to :html, :json
   require 'docker'
+  include Common::DockerInteraction
 
-  # Begin methods for actions, these have to be the first methods in the controller class and need to be public
+
+  # << Begin methods for actions, these have to be the first methods in the controller class and need to be public
+
+  # Listing all the images in either json or html format.
+  # Used by: the rails framework
+  # * *Args*    :
+  #   - Nothing 
+  # * *Returns* :
+  #   - Nothing 
+  # * *Raises* :
+  #   - Nothing 
   public
     def index
       @images = Image.all
@@ -14,6 +29,14 @@ class ImagesController < ApplicationController
       end
     end
 
+  # Showing one image based on a image ID get parameter.
+  # Used by: the rails framework
+  # * *Args*    :
+  #   - Nothing 
+  # * *Returns* :
+  #   - Nothing 
+  # * *Raises* :
+  #   - Nothing 
   public
     def show
       @image = Image.find(params[:id])
@@ -25,11 +48,28 @@ class ImagesController < ApplicationController
       end
     end
 
+  # The action being called before the new image form.
+  # Used by: the rails framework
+  # * *Args*    :
+  #   - Nothing 
+  # * *Returns* :
+  #   - Nothing 
+  # * *Raises* :
+  #   - Nothing 
   public
     def new
       @image = Image.new
     end
 
+  # Creating a new image based on user entered parameters.
+  # Depending on a form option, this either adds a reference to a existing image in the Docker Hub, or adds a reference to a newly created and added image.
+  # Used by: the rails framework
+  # * *Args*    :
+  #   - Nothing 
+  # * *Returns* :
+  #   - Nothing 
+  # * *Raises* :
+  #   - Nothing 
   public
     def create
       @image = Image.new(define_image_parameters)
@@ -59,6 +99,17 @@ class ImagesController < ApplicationController
       end
     end
 
+  # @@Obsolete
+  # This used to be used to update fuction used to update a image in the database.
+  # However, Images are longer just database entries after a major overhaul in the application. This method therefore doesnt fully suffice updating a Image.
+  # It is still there for when update functionality will return in the future.
+  # Used by: the rails framework
+  # * *Args*    :
+  #   - Nothing 
+  # * *Returns* :
+  #   - Nothing 
+  # * *Raises* :
+  #   - Nothing 
   public
     def update
       @image = Image.find(params[:id])
@@ -70,21 +121,40 @@ class ImagesController < ApplicationController
       end
     end
  
+  # This destroys the image.
+  # Used by: the rails framework
+  # * *Args*    :
+  #   - Nothing 
+  # * *Returns* :
+  #   - Nothing 
+  # * *Raises* :
+  #   - Nothing 
   public
     def destroy
       @image = Image.find(params[:id])
       destroy_status = @image.destroy
       respond_to do |format|
-        format.html
+        format.html{
+          redirect_to action: :index
+        }
         format.json{
           render :json => destroy_status
         }
       end
-      redirect_to action: :index
+      
     end
 
-  # End methods for actions
+  # End methods for actions />
 
+
+  # Filters image parameters to only allow specific ones. This is for security, since not all parameters should be alterable from passing GET variables.
+  # Used by: the rails framework
+  # * *Args*    :
+  #   - Nothing 
+  # * *Returns* :
+  #   - Nothing 
+  # * *Raises* :
+  #   - Nothing 
   private
     def define_image_parameters
       params.require(:image).permit(:repo, :image, :created)

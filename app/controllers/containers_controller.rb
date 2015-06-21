@@ -1,6 +1,7 @@
   class ContainersController < ApplicationController
 
   def new
+    @container = Container.new
   end
 
   def create
@@ -10,16 +11,28 @@
     image = Image.find(form_params["image_id"])
     Docker.url = "tcp://"+server.host+":5555/"
     creation_args = {}
-    creation_args["ExposedPorts"] = {"#{form_params["local_port"]}/tcp" => ""}
+    creation_args["ExposedPorts"] = {"#{form_params["local_port"]}/tcp" => {}}
     creation_args["HostConfig"] = {"PortBindings" => {"#{form_params["local_port"]}/tcp" => [{"HostPort" => "#{form_params["host_port"]}"}]}}
     creation_args["Cmd"] = form_params["command"].split(" ")
     creation_args["Image"] = "#{image.repo}/#{image.image}" 
-    # creation_args["HostName"] = form_params["name"] 
-    c = Docker::Container.create(creation_args)
+    container_arguments_attributes = form_params["container_arguments_attributes"]
+    container_arguments_attributes = container_arguments_attributes
+    container_arguments_attributes.each do |a|
+      b = Hash(a[1])
+      creation_args["#{b["name"]}"] = "#{b["value"]}"
+    end
 
-    @container = Container.parse_container(c.json, server)
-
-    redirect_to @container
+    puts creation_args
+    
+    begin
+      Docker::Image.create('fromImage' => "#{image.repo}/#{image.image}" )
+      c = Docker::Container.create(creation_args)
+      @container = Container.parse_container(c.json, server)
+      redirect_to @container
+    rescue Docker::Error::DockerError => e
+      puts e
+      redirect_to({action: :index}, :alert => "An error occured while trying to create the container... Verify your image exists in the repository.")
+    end
   end
 
   def index
@@ -98,6 +111,6 @@
 
   private
       def container_params
-          params.require(:container).permit(:command, :image_id, :name, :server_id, :local_port, :host_port)
+          params.require(:container).permit(:command, :image_id, :name, :server_id, :local_port, :host_port, container_arguments_attributes: [:name, :value])
       end
 end
