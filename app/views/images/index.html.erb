@@ -4,7 +4,7 @@
 <table class="striped">
   <tr>
     <th>Id</th>
-    <th>Repo/Image</th>
+    <th>RepoTags</th>
     <th>Created</th>
     <th colspan="3"></th>
   </tr>
@@ -12,8 +12,8 @@
   <% @images.each do |image| %>
     <tr>
       <td><%= image.id %></td>
-      <td><%= image.repo %>:<%= image.image %></td>
+      <td><%= image.repo %>/<%= image.image %></td>
       <td><%= image.created_at %></td>
-      <td><%= link_to 'Edit', edit_image_path(image) , class: "blue darken-3 btn"%></td>
+      <td><%= link_to "Remove",image_destroy_path(id: image.id), class: "blue darken-3 btn" %></td>
   <% end %>
 </table>
