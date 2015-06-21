@@ -14,23 +14,21 @@ class ServersController < ApplicationController
 
   def index
     @servers = Server.all
-    puts @servers.inspect
     respond_to do |format|
       format.html
       format.json{
-        image = params[:image]
-        if !image.nil?
-          server_ids = Container.all.where(image: image).map{|c| c.server_id}
+        image = params.fetch(:image)
+        unless image.nil?
+          server_ids = Container.all.where(image: image).map(&:server_id)
           @servers = Server.find(server_ids)
         end
-        render :json => @servers.to_json(:only => [ :id, :name, :host ])
+        render json: @servers.to_json(only: [:id, :name, :host])
       }
     end
-    
   end
   
   def destroy
-    @server = Server.find(params[:id])
+    @server = Server.find(params.fetch(:id))
     @server.destroy
 
     redirect_to action: :index
@@ -43,23 +41,24 @@ class ServersController < ApplicationController
   end
 
   def setup
-    ServerSetupWorker.delay.perform(params[:id])
-    flash[:notice] = "Setup is running, this could take a while."
+    ServerSetupWorker.perform(params.fetch(:id))
+    flash[:notice] = 'Setup is running, this could take a while.'
     redirect_to action: :show
   end
 
   def show
-    @server = Server.find(params[:id])
+    @server = Server.find(params.fetch(:id))
     respond_to do |format|
       format.html
       format.json{
-        render :json => @server.to_json(:only => [ :id, :name, :host ])
+        render json: @server.to_json(only: [:id, :name, :host])
       }
     end
   end
 
   private
-    def server_params
-      params.require(:server).permit(:name, :host, :user, :password)
-    end
+  
+  def server_params
+    params.require(:server).permit(:name, :host, :user, :password)
+  end
 end

@@ -14,18 +14,18 @@ class Settings
 
   def get_servers(container_list)
     servers_containers = {}
-    container_list.each do |c|
-      if servers_containers[Server.find(c.server_id)] == nil
-        servers_containers[Server.find(c.server_id)] = [c.id]
+    container_list.each { |container|
+      if servers_containers[Server.find(container.server_id)] == nil
+        servers_containers[Server.find(container.server_id)] = [container.id]
       else
-        servers_containers[Server.find(c.server_id)] = servers_containers[Server.find(c.server_id)].push(c.id)
+        servers_containers[Server.find(container.server_id)] = servers_containers[Server.find(container.server_id)].push(container.id)
       end
-    end
+    }
     servers_containers
   end
 
   def read_config_file
-    @servers_nginx_containers.map{|server, containers| 
+    @servers_nginx_containers.map { |server, containers| 
       Net::SSH.start( server.host, server.user, :password => server.password) do|ssh|
         @config_file = ssh.exec!("docker exec #{containers.first} cat /etc/nginx/sites-enabled/config")
       end
@@ -35,29 +35,29 @@ class Settings
 
   def format_config_file
     @formatted_config_file = simple_format(@config_file)
-    @servers_gui_containers.each do |server,containers|
+    @servers_gui_containers.each { |server, containers|
       @formatted_config_file = @formatted_config_file.gsub("server #{server.host}", "server <span class='green'>#{server.host}</span>")
-    end
+    }
     @formatted_config_file.gsub!(/(server) ((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))(:.+)/, '\1 <span class="red">\2</span> \3')
     @formatted_config_file
   end
 
   def edit_config_file
     upstream = "upstream website {\n    least_conn;\n"
-    @servers_gui_containers.each do |s, containers|
-      containers.each do |c|
+    @servers_gui_containers.each { |s, containers|
+      containers.each {|c|
         upstream += "    server #{s.host}:#{Container.find(c).host_port};\n"
-      end
-    end
+      }
+    }
     @config_file.gsub!(/upstream.+/m, upstream+"}")
   end
 
   def update
     edit_config_file
     puts @config_file
-    servers_nginx_containers.each do |server, containers|
+    servers_nginx_containers.each { |server, containers|
       NginxEditConfigWorker.perform(server, containers.first, @config_file)
-    end
+    }
   end
 end
 

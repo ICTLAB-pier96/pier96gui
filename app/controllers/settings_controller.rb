@@ -13,7 +13,7 @@ class SettingsController < ApplicationController
   def update
     @settings = Settings.new
     @settings.update
-    flash[:notice] = "Nginx containers are currently being updated."
+    flash[:notice] = 'Nginx containers are currently being updated.'
     redirect_to action: :index
   end
 end
