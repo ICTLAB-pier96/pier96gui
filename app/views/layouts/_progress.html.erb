@@ -1,0 +1,38 @@
+<% unless @progress_id.nil? %>
+  <script>
+    var interval;
+    interval = setInterval(function(){
+      $.ajax({
+        url: '/progress/' + <%= @progress_id %> + '.json',
+        success: function(progress){
+          var percentage;
+
+          // If there are errors
+          if (progress.last_error != null) {
+            $('.progress').removeClass('active');
+            clearInterval(interval);
+          }
+
+          percentage = progress.percentage
+
+          if (percentage.toString() !== 'NaN'){
+            $('.determinate').css('width', percentage + '%').text(progress + '%');
+          }
+          if (percentage.toString() == '100'){
+            setTimeout( function() 
+                        {
+                          window.history.go(-1);
+                        }, 1000);
+          }
+        },
+        error: function(){
+          $('.progress').removeClass('active');
+          $('.progress-bar').css('width', '100%').text('100%');
+          $('.progress-status').text('Successfully exported!');
+          $('.export-link').show();
+          clearInterval(interval);
+        }
+      })
+    },500);
+  </script>
+<% end %>

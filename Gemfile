@@ -30,7 +30,6 @@ gem 'jbuilder', '~> 2.0'
 gem 'web-console', '~> 2.0'
 # Gem for nested forms
 gem "nested_form"
-
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
@@ -43,5 +42,8 @@ group :development, :test do
   gem 'rubocop', require: false
   gem 'spring'
   gem 'sdoc', '~> 0.4.1', group: :doc
-  gem "rubycritic", :require => false
+  gem 'rubycritic', :require => false
+  gem 'capybara'
+  gem 'railroady'
+  gem 'method_profiler'
 end

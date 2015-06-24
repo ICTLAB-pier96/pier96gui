@@ -1,9 +1,14 @@
-<% flash.each do |name, msg| %>
-  <div class="toast-container">
-    <% if msg.is_a?(String) %>
-      <div class="toast <%= name.to_s == 'notice' ? 'green' : 'red' %>">
-        <%= content_tag :div, msg %>
-      </div>
-    <% end %>
-    </div>
-<% end %>
+<div id="flashes">
+
+  <% if flash[:notice] %>
+    <p id="flash_notice" class="toast green"><%= flash[:notice] %></p>
+    <%= javascript_tag "$('#flash_notice').effect('highlight',{},2000);" %>
+  <% end %>
+
+  <% if flash[:error] || flash[:errors] %>
+    <p id="flash_errors" class="toast red"><%= flash[:error] || flash[:errors] %></p>
+    <%= javascript_tag "$('#flash_errors').effect('highlight',{},2000);" %>
+  <% end %>
+
+  <% flash[:error] = flash[:errors] = flash[:notice] = nil %>
+</div>

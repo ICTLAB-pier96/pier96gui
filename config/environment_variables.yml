@@ -1,1 +1,2 @@
- EY: dkmk934kjr54kjf845
+nginx_image : "pier96/nginx"
+gui_image : "pier96/gui"

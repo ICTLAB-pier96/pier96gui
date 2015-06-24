@@ -15,9 +15,15 @@
       <%= render 'layouts/navigation' %>
     </header>
     <main class="container">
+      <% unless @progress_id.nil? %>
+        <div class="progress">
+          <div class="determinate" style="width: 0%"></div>
+        </div>
+      <% end %>
       <%= render 'layouts/messages' %>
       <%= yield %>
     </main>
   </body>
   <%= render 'layouts/footer' %>
+  <%= render 'layouts/progress'%>
 </html>

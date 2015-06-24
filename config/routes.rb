@@ -25,11 +25,12 @@ Rails.application.routes.draw do
   get '/containers/:id/restart', to: 'containers#restart', as: :container_restart
   get '/containers/:id/start', to: 'containers#start', as: :container_start
   get '/containers/:id/migrate', to: 'containers#migrate', as: :container_migrate
-
+  get '/progress/:id', to: 'progress#show', as: :progress
 
   get '/settings', to: 'settings#index', as: :settings
 
   get '/settings/nginx_update', to: 'settings#update', as: :settings_fix_upstream
+  
   resources :images, :containers, :servers
   
 end

@@ -1,3 +1,5 @@
+# @author = Patrick
+# DashboardController is used to show the homepage, which contains server stats
 class DashboardController < ApplicationController
   def index
     time = Time.now.hour
@@ -6,7 +8,8 @@ class DashboardController < ApplicationController
   end
 
 
-  
+  private 
+
 # This method uses ServerLoad logs to calculate the average ram_usage per server per hour.
 # It formats the output as expected by highcharts.
 #
@@ -18,14 +21,14 @@ class DashboardController < ApplicationController
 #   - Nothing
   def get_series(current_hour)
     @series = []
-    empty_hash =  {}
-    Array (00..23).each{|hour| empty_hash[hour] = [ServerLoad.new({:ram_usage => 0})]}
-    Server.all.each { |server|
-      
-      logs_per_hour = empty_hash.merge!(ServerLoad.where(server_id: server.id, updated_at: (Time.now - 24.hours)..Time.now).group_by(&:hour))
+    logs_per_hour =  {}
+    Array (00..23).each{|hour| logs_per_hour[hour] = [ServerLoad.new({:ram_usage => 0})]}
+    
+    Server.all.each { |server|  
+      logs_per_hour = logs_per_hour.merge!(ServerLoad.where(server_id: server.id, updated_at: (Time.now - 24.hours)..Time.now).group_by(&:hour))
       average_ram_per_hour = logs_per_hour.map { |_,array| (array.map(&:ram_usage).reduce(:+).to_f/ array.size).round(2) }
       
-      @series.push({name: server.name, data: fix_order(average_ram_per_hour, current_hour)})
+      @series.push({name: server.name, data: change_order(average_ram_per_hour, current_hour)})
     }
     @series
   end
@@ -47,9 +50,9 @@ class DashboardController < ApplicationController
     @categories
   end
 
-  def fix_order(array, position)
-    first_half = array[0..position]
-    second_half = array[position+1..array.size]
+  def change_order(array, split_position)
+    first_half = array[0..split_position]
+    second_half = array[split_position+1..array.size]
     
     second_half + first_half
   end

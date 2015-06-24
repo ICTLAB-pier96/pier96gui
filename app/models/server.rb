@@ -1,11 +1,28 @@
+# @author = Patrick
+#
 class Server < ActiveRecord::Base
-  ip_regex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/
-  url_regex = URI.regexp
-  validates :host, :format => { :with => ip_regex, :multiline => true , :message => "This is not a valid host" }, :presence => { :message => " can't be blank" }
+  # constants
+  IP_REGEX = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/
+  URL_REGEX = URI.regexp
+
+  # assocation
+  has_many :server_load
+
+  # validations
+  validates :host, :format => { :with => IP_REGEX, :multiline => true , :message => " is not a valid url or ip" }, :presence => { :message => " can't be blank" }
   validates :name, :presence => { :message => " can't be blank" }
   validates :user, :presence => { :message => " can't be blank" }
   validates :password, :presence => { :message => " can't be blank" }
 
+  # This method updates the status of a server
+  # If the server is online it will grab some server details: ram_usage, disk_space
+  #
+  # * *Args*    :
+  #   - Nothing 
+  # * *Returns* :
+  #   - Nothing
+  # * *Raises* :
+  #   - Exceptions -> exceptions will be caught higher, when this method is called
   def get_server_status
     Net::SSH.start( self.host, self.user, :password => self.password, :timeout => 5) do|ssh|
       status = ssh.exec!("echo true")
@@ -25,13 +42,13 @@ class Server < ActiveRecord::Base
   def get_daemon_status
     url = URI.parse("http://"+ self.host.gsub("http://","")+":5555/info")
     http = Net::HTTP.new(url.host, url.port)
-    http.read_timeout = 5
-    http.open_timeout = 5
+    http.read_timeout = http.open_timeout = 5
+    
     http.start do |connection|
       url = URI.parse(URI.encode("http://" + self.host.gsub("http://","")+":5555/info"))
       request = Net::HTTP::Get.new(url.request_uri)
-      @response = connection.request(request)
-      status =  JSON.parse(@response.body, :symbolize_names => true)
+      response = connection.request(request)
+      status =  JSON.parse(response.body, :symbolize_names => true)
       helper = Object.new.extend(ActionView::Helpers::NumberHelper) 
       self.update_attributes(
         :status => true,
@@ -44,36 +61,6 @@ class Server < ActiveRecord::Base
         )
     end
   end
-
-  # This method creates a ssh connection and checks if it has docker installed and the daemon is running correctly
-  #
-  # * *Args*    :
-  #   - +server+ -> needs one server instance
-  # * *Returns* :
-  #   - Nothing 
-  # * *Raises* :
-  #   - Nothing 
-  def start_setup
-    Net::SSH.start( self.host, self.user, :password => self.password) do|ssh|
-
-      os = ssh.exec!("cat /etc/*release | tr -s '=' $'\t' |grep PRETTY_NAME |cut -f2")
-
-      cmd = case os
-      when /CentOS/
-        "yum list installed docker"
-      when /Ubuntu/
-        "dpkg-query -l docker.io"
-      when /Debian/
-        "dpkg-query -l docker.io"
-      end
-      check_docker = ssh.exec!(cmd)
-      self.os = os
-
-      install_docker(ssh) if check_docker.match(/docker/).nil?
-      run_docker_daemon(ssh) unless self.daemon_status
-    end
-  end
-
 
 
   # This method uses the ssh connection and tries to install docker
@@ -90,16 +77,15 @@ class Server < ActiveRecord::Base
       "yum -y install docker"
     when /Ubuntu/
       "apt-get install -y docker.io"
-    when /Debian/
+    else 
       "apt-get install -y curl; curl -sSL https://get.docker.com/ | sh"
     end
     ssh.exec!(cmd)
   end
 
-  # This method uses the ssh connection and starts the docker daemon on port :5555
+  # This method uses the ssh connection and starts the docker daemon in the background on port :5555
   #
   # * *Args*    :
-  #   - +server+ -> needs one server instance
   #   - +ssh+ -> needs a ssh connection
   # * *Returns* :
   #   - Nothing 
@@ -111,9 +97,8 @@ class Server < ActiveRecord::Base
   end
 
   # This method uses the ssh connection and stops the daemon if it is running
-  #
+  # It calls the kil
   # * *Args*    :
-  #   - +server+ -> needs one server instance
   #   - +ssh+ -> needs a ssh connection
   # * *Returns* :
   #   - Nothing 
@@ -122,11 +107,9 @@ class Server < ActiveRecord::Base
   def stop_docker_daemon(ssh)
     cmd = case self.os
     when /CentOS/
-      "pkill -9 docker; rm /var/run/docker.pid"
-    when /Ubuntu/
-      "killall -9 docker; rm /var/run/docker.pid"
-    when /Debian/
-      "apt-get install -y curl; curl -sSL https://get.docker.com/ | sh"
+      "pkill docker; rm /var/run/docker.pid"
+    when /Ubuntu/, /Debian/
+      "killall docker; rm /var/run/docker.pid"
     end
     ssh.exec!(cmd)
   end

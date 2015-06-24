@@ -1,13 +1,23 @@
+# @author = Patrick
 class Settings
+
+  # Includes
   include ActionView::Helpers::TextHelper
+
+  # Constants in SCREAMING_SNAKE_CASE
+  NGINX_CONFIG_REGEX = /(server) ((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))(:.+)/
+  CONFIG_PATH = "/etc/nginx/sites-enabled/config"
+  
+  # Attribute macros
+  attr_accessor :config_file, :formatted_config_file, :servers_nginx_containers, :servers_gui_containers
+  
   def initialize
-    @servers_nginx_containers = get_servers(get_containers("pier96/nginx"))
-    @servers_gui_containers = get_servers(get_containers("pier96/gui"))
-    @config_file = read_config_file
+    @servers_nginx_containers = get_servers(get_containers(ENV["nginx_image"]))
+    @servers_gui_containers = get_servers(get_containers(ENV["gui_image"]))
+    @config_file = read_local_config_file
     @formatted_config_file = format_config_file
   end
 
-  attr_accessor :config_file, :formatted_config_file, :servers_nginx_containers, :servers_gui_containers
   def get_containers(name)
     Container.all.where("state ilike '%\"Running\"=>true%'").where(:image => name)
   end
@@ -24,13 +34,20 @@ class Settings
     servers_containers
   end
 
-  def read_config_file
+  def read_local_config_file
+    File.open(Rails.root.join('tmp', 'config'), 'rb') do |file|
+      @config_file = file.read 
+    end
+    @config_file
+  end
+
+  def get_config_file_from_server
     @servers_nginx_containers.map { |server, containers| 
       Net::SSH.start( server.host, server.user, :password => server.password) do|ssh|
-        @config_file = ssh.exec!("docker exec #{containers.first} cat /etc/nginx/sites-enabled/config")
+        @config_file = ssh.exec!("docker exec #{containers.first} cat #{CONFIG_PATH}")
       end
     }
-    @config_file
+    NginxService::create_config_file(@config_file)
   end
 
   def format_config_file
@@ -38,7 +55,7 @@ class Settings
     @servers_gui_containers.each { |server, containers|
       @formatted_config_file = @formatted_config_file.gsub("server #{server.host}", "server <span class='green'>#{server.host}</span>")
     }
-    @formatted_config_file.gsub!(/(server) ((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))(:.+)/, '\1 <span class="red">\2</span> \3')
+    @formatted_config_file.gsub!(NGINX_CONFIG_REGEX, '\1 <span class="red">\2</span> \3')
     @formatted_config_file
   end
 
@@ -54,9 +71,8 @@ class Settings
 
   def update
     edit_config_file
-    puts @config_file
     servers_nginx_containers.each { |server, containers|
-      NginxEditConfigWorker.perform(server, containers.first, @config_file)
+      NginxService::config.perform(server, containers.first, @config_file)
     }
   end
 end
