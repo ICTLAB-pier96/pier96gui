@@ -1,5 +1,4 @@
 class ApplicationController < ActionController::Base
-  before_action :protect
 
   protected
     def protect
